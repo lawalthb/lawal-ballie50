@@ -36,8 +36,7 @@ class CustomerController extends Controller
 
         // Filter by status
         if ($request->filled('status')) {
-            $isActive = $request->get('status') === 'active';
-            $query->where('is_active', $isActive);
+            $query->where('status', $request->get('status'));
         }
 
         // Sorting
@@ -60,7 +59,7 @@ class CustomerController extends Controller
             }
         }
 
-        $customers = Customer::where('tenant_id', $tenant->id)->latest()-> paginate(10);
+        $customers = $query->paginate(10);
 
         // Calculate statistics for the index page
         $totalCustomers = Customer::where('tenant_id', $tenant->id)->count();

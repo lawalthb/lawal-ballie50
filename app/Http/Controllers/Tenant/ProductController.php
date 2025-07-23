@@ -55,7 +55,21 @@ class ProductController extends Controller
         $products = $query->latest()->paginate(15);
         $categories = ProductCategory::where('tenant_id', $tenant->id)->active()->get();
 
-        return view('tenant.inventory.products.index', compact('products', 'categories', 'tenant'));
+        // Calculate statistics
+        $totalProducts = Product::where('tenant_id', $tenant->id)->count();
+        $activeProducts = Product::where('tenant_id', $tenant->id)->where('is_active', true)->count();
+        $lowStockProducts = Product::where('tenant_id', $tenant->id)->lowStock()->count();
+        $outOfStockProducts = Product::where('tenant_id', $tenant->id)->outOfStock()->count();
+
+        return view('tenant.inventory.products.index', compact(
+            'products', 
+            'categories', 
+            'tenant',
+            'totalProducts',
+            'activeProducts', 
+            'lowStockProducts',
+            'outOfStockProducts'
+        ));
     }
 
     public function create(Tenant $tenant)
