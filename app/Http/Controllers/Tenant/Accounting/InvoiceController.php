@@ -91,11 +91,12 @@ class InvoiceController extends Controller
             'voucher_date' => 'required|date',
             'reference_number' => 'nullable|string|max:255',
             'narration' => 'nullable|string',
-            'customer_id' => 'nullable|exists:customers,id',
+            'customer_id' => 'required|exists:ledger_accounts,id',
             'inventory_items' => 'required|array|min:1',
             'inventory_items.*.product_id' => 'required|exists:products,id',
             'inventory_items.*.quantity' => 'required|numeric|min:0.01',
             'inventory_items.*.rate' => 'required|numeric|min:0',
+            'inventory_items.*.purchase_rate' => 'nullable|numeric|min:0',
             'inventory_items.*.description' => 'nullable|string',
         ]);
 
@@ -127,6 +128,7 @@ class InvoiceController extends Controller
                     'quantity' => $item['quantity'],
                     'rate' => $item['rate'],
                     'amount' => $amount,
+                    'purchase_rate' => $item['purchase_rate'] ?? $product->purchase_rate,
                 ];
             }
 
@@ -153,13 +155,26 @@ class InvoiceController extends Controller
                 'posted_by' => $request->action === 'save_and_post' ? auth()->id() : null,
             ]);
 
-            // Store inventory items in voucher meta or separate table
-            $voucher->update([
-                'meta_data' => json_encode(['inventory_items' => $inventoryItems])
-            ]);
+          foreach ($inventoryItems as $item) {
+    $voucher->items()->create([
+        'product_id' => $item['product_id'],
+        'product_name' => $item['product_name'],
+        'description' => $item['description'],
+        'quantity' => $item['quantity'],
+        'rate' => $item['rate'],
+        'amount' => $item['amount'],
+        'voucher_id' => $voucher->id,
+
+        'purchase_rate' => $item['purchase_rate'] ?? 0,
+        'discount' => $item['discount'] ?? 0,
+        'tax' => $item['tax'] ?? 0,
+        'is_tax_inclusive' => $item['is_tax_inclusive'] ?? false,
+        'total' => $item['total'] ?? null,
+    ]);
+}
 
             // Create accounting entries
-            $this->createAccountingEntries($voucher, $inventoryItems, $tenant);
+            $this->createAccountingEntries($voucher, $inventoryItems, $tenant, $request->customer_id);
 
             // Update product stock if posted
             if ($request->action === 'save_and_post') {
@@ -499,19 +514,15 @@ class InvoiceController extends Controller
         return view('tenant.accounting.invoices.print', compact('tenant', 'invoice', 'inventoryItems', 'customer'));
     }
 
-    private function createAccountingEntries(Voucher $voucher, array $inventoryItems, Tenant $tenant)
+    private function createAccountingEntries(Voucher $voucher, array $inventoryItems, Tenant $tenant, $customerLedger_id)
     {
         // Get default accounts
         $salesAccount = LedgerAccount::where('tenant_id', $tenant->id)
             ->where('name', 'LIKE', '%Sales%')
             ->first();
 
-        $cashAccount = LedgerAccount::where('tenant_id', $tenant->id)
-            ->where('name', 'LIKE', '%Cash%')
-            ->first();
-
-        if (!$salesAccount || !$cashAccount) {
-            throw new \Exception('Required ledger accounts (Sales, Cash) not found. Please create them first.');
+        if (!$salesAccount || !$customerLedger_id) {
+            throw new \Exception('Required ledger accounts (Sales, and customer ledger id) not found. Please create them first.');
         }
 
         $totalAmount = collect($inventoryItems)->sum('amount');
@@ -519,7 +530,7 @@ class InvoiceController extends Controller
         // Debit: Cash/Accounts Receivable
         VoucherEntry::create([
             'voucher_id' => $voucher->id,
-            'ledger_account_id' => $cashAccount->id,
+            'ledger_account_id' => $customerLedger_id,
             'debit_amount' => $totalAmount,
             'credit_amount' => 0,
             'particulars' => 'Sales invoice - ' . $voucher->getDisplayNumber(),

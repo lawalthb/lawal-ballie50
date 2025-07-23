@@ -62,6 +62,7 @@
                                 <option value="{{ $product->id }}"
                                     data-name="{{ $product->name }}"
                                     data-sales-rate="{{ $product->sales_rate }}"
+                                    data-purchase-rate="{{ $product->purchase_rate }}"
                                     data-stock="{{ $product->current_stock }}"
                                     data-unit="{{ $product->primaryUnit->name ?? 'Pcs' }}"
                                         data-sku="{{ $product->sku }}">
@@ -114,6 +115,10 @@
                                        x-model="item.amount"
                                        class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md bg-gray-50 text-right"
                                        readonly>
+                                <!-- Hidden input for purchase_rate -->
+                                <input type="hidden"
+                                       :name="`inventory_items[${index}][purchase_rate]`"
+                                       x-model="item.purchase_rate">
                             </td>
                             <td class="py-3 px-2 text-center">
                                 <button type="button"

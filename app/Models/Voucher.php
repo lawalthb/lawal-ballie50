@@ -175,4 +175,9 @@ class Voucher extends Model
         };
     }
 
+    public function items()
+{
+    return $this->hasMany(InvoiceItem::class);
+}
+
 }

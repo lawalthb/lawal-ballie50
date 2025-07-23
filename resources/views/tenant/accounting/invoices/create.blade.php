@@ -7,7 +7,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Create Invoice</h1>
+            <h1 class="text-2xl font-bold text-gray-900">    <span x-text="vchType">Create Invoice</span></h1>
             <p class="mt-1 text-sm text-gray-500">
                 Create a new invoice with inventory management
             </p>
@@ -193,6 +193,7 @@ window.invoiceItems = function() {
                 quantity: '',
                 rate: '',
                 amount: '',
+                purchase_rate: '',
                 current_stock: null,
                 unit: 'Pcs'
             }
@@ -237,6 +238,7 @@ window.invoiceItems = function() {
                 quantity: '',
                 rate: '',
                 amount: '',
+                purchase_rate: '',
                 current_stock: null,
                 unit: 'Pcs'
             });
@@ -257,6 +259,7 @@ window.invoiceItems = function() {
                 if (selectedOption) {
                     const productName = selectedOption.getAttribute('data-name');
                     const salesRate = selectedOption.getAttribute('data-sales-rate');
+                    const purchaseRate = selectedOption.getAttribute('data-purchase-rate');
                     const currentStock = selectedOption.getAttribute('data-stock');
                     const unit = selectedOption.getAttribute('data-unit');
 
@@ -265,8 +268,9 @@ window.invoiceItems = function() {
                         item.description = productName;
                     }
 
-                    // Set sales rate
+                    // Set sales rate and purchase rate
                     item.rate = salesRate;
+                    item.purchase_rate = purchaseRate;
                     item.current_stock = currentStock;
                     item.unit = unit;
 
@@ -278,6 +282,7 @@ window.invoiceItems = function() {
             } else {
                 // Clear related fields when product is deselected
                 item.current_stock = null;
+                item.purchase_rate = '';
                 item.unit = 'Pcs';
             }
         },
@@ -319,10 +324,11 @@ function invoiceForm() {
             if (this.voucherTypeId && this.voucherTypes[this.voucherTypeId]) {
                 const voucherType = this.voucherTypes[this.voucherTypeId];
                 this.invoiceNumberPreview = voucherType.prefix + 'XXXX';
+                this.vchType = 'Create '+voucherType.name+ ' Invoice';
 
                 // Notify inventory component about voucher type change
                 document.dispatchEvent(new CustomEvent('voucher-type-changed', {
-                    detail: { voucherType: voucherType }
+                    detail: { voucherType: voucherType, vchType: this.vchType }
                 }));
             } else {
                 this.invoiceNumberPreview = 'Auto-generated';

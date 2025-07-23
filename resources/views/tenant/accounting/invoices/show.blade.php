@@ -16,19 +16,19 @@
             </div>
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Invoice #{{ $invoice->invoice_number }}</h1>
-                <p class="text-sm text-gray-500">Created on {{ $invoice->issue_date->format('M d, Y') }}</p>
+                <p class="text-sm text-gray-500">Created on {{ $invoice->created_at->format('M d, Y') }}</p>
             </div>
         </div>
 
         <div class="mt-4 md:mt-0 flex flex-col sm:flex-row sm:space-x-3 space-y-3 sm:space-y-0">
-            <a href="{{ route('tenant.invoices.pdf', ['tenant' => tenant()->slug, 'invoice' => $invoice->id]) }}" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 rounded-xl text-white hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-md">
+            <a href="#" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 rounded-xl text-white hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-md">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                 </svg>
                 Download PDF
             </a>
 
-            <form action="{{ route('tenant.invoices.send', ['tenant' => tenant()->slug, 'invoice' => $invoice->id]) }}" method="POST">
+            <form action="#" method="POST">
                 @csrf
                 <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl text-white hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md w-full sm:w-auto">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,7 +44,7 @@
     <div class="bg-white rounded-2xl p-6 shadow-lg">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Payments</h3>
 
-        @if($invoice->payments->count())
+        {{-- @if($invoice->payments->count() ) --}}
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -65,11 +65,11 @@
                     </tbody>
                 </table>
             </div>
-        @else
-            <div class="bg-gray-50 p-4 rounded-lg text-center">
+        {{-- @else --}}
+            {{-- <div class="bg-gray-50 p-4 rounded-lg text-center">
                 <p class="text-gray-500">No payments recorded yet.</p>
             </div>
-        @endif
+        @endif --}}
     </div>
 
     <!-- Activity Log -->
