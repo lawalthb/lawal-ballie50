@@ -1,4 +1,12 @@
-<div class="bg-white shadow-sm rounded-lg border border-gray-200">
+<div class="bg-white shadow-sm rounded-lg border border-gray-200" x-data="invoiceItems()">
+    <!-- Debug Info -->
+    @if(config('app.debug'))
+        <div class="px-6 py-2 bg-yellow-50 border-b border-yellow-200 text-xs">
+            <strong>Debug:</strong> Products count: {{ isset($products) ? count($products) : 'Not set' }} | 
+            First product: {{ isset($products) && count($products) > 0 ? $products->first()->name : 'None' }}
+        </div>
+    @endif
+    
     <div class="px-6 py-4 border-b border-gray-200">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-medium text-gray-900">📦 Invoice Items</h3>
@@ -44,21 +52,25 @@
                         <tr class="border-b border-gray-100 hover:bg-gray-50">
                             <td class="py-3 px-2">
                                 <select :name="`inventory_items[${index}][product_id]`"
-                                        x-model="item.product_id"
-                                        @change="updateProductDetails(index)"
-                                        class="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 rounded-md"
-                                        required>
-                                    <option value="">Select Product</option>
-                                    @foreach($products as $product)
-                                        <option value="{{ $product->id }}"
-                                                data-name="{{ $product->name }}"
-                                                data-sales-rate="{{ $product->sales_rate }}"
-                                                data-stock="{{ $product->current_stock }}"
-                                                data-unit="{{ $product->primaryUnit->name ?? 'Pcs' }}"
-                                                data-sku="{{ $product->sku }}">
-                                            {{ $product->name }} @if($product->sku)({{ $product->sku }})@endif
+                                x-model="item.product_id"
+                                @change="updateProductDetails(index)"
+                                class="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 rounded-md"
+                                required>
+                                <option value="">Select Product</option>
+                                @if(isset($products) && count($products) > 0)
+                                @foreach($products as $product)
+                                <option value="{{ $product->id }}"
+                                    data-name="{{ $product->name }}"
+                                    data-sales-rate="{{ $product->sales_rate }}"
+                                    data-stock="{{ $product->current_stock }}"
+                                    data-unit="{{ $product->primaryUnit->name ?? 'Pcs' }}"
+                                        data-sku="{{ $product->sku }}">
+                                        {{ $product->name }} @if($product->sku)({{ $product->sku }})@endif
                                         </option>
-                                    @endforeach
+                                        @endforeach
+                                    @else
+                                        <option value="" disabled>No products available</option>
+                                    @endif
                                 </select>
                                 <div class="mt-1 text-xs text-gray-500" x-show="item.current_stock !== null">
                                     Stock: <span x-text="item.current_stock"></span> <span x-text="item.unit"></span>
@@ -150,115 +162,4 @@
     </div>
 </div>
 
-<script>
-window.invoiceItems = function() {
-    return {
-        items: [
-            {
-                product_id: '',
-                description: '',
-                quantity: '',
-                rate: '',
-                amount: '',
-                current_stock: null,
-                unit: 'Pcs'
-            }
-        ],
-
-        get totalAmount() {
-            const total = this.items.reduce((sum, item) => {
-                return sum + (parseFloat(item.amount) || 0);
-            }, 0);
-
-            // Notify parent component about total change
-            this.$nextTick(() => {
-                document.dispatchEvent(new CustomEvent('inventory-total-updated', {
-                    detail: { total: total }
-                }));
-            });
-
-            return total;
-        },
-
-        get hasStockWarnings() {
-            return this.items.some(item => {
-                return item.product_id &&
-                       item.quantity &&
-                       item.current_stock !== null &&
-                       parseFloat(item.quantity) > parseFloat(item.current_stock);
-            });
-        },
-
-        formatNumber(num) {
-            if (!num || isNaN(num)) return '0.00';
-            return parseFloat(num).toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        },
-
-        addItem() {
-            this.items.push({
-                product_id: '',
-                description: '',
-                quantity: '',
-                rate: '',
-                amount: '',
-                current_stock: null,
-                unit: 'Pcs'
-            });
-        },
-
-        removeItem(index) {
-            if (this.items.length > 1) {
-                this.items.splice(index, 1);
-            }
-        },
-
-        updateProductDetails(index) {
-            const item = this.items[index];
-            if (item.product_id) {
-                const selectElement = document.querySelector(`select[name="inventory_items[${index}][product_id]"]`);
-                const selectedOption = selectElement.options[selectElement.selectedIndex];
-
-                if (selectedOption) {
-                    const productName = selectedOption.getAttribute('data-name');
-                    const salesRate = selectedOption.getAttribute('data-sales-rate');
-                    const currentStock = selectedOption.getAttribute('data-stock');
-                    const unit = selectedOption.getAttribute('data-unit');
-
-                    // Set description if empty
-                    if (!item.description) {
-                        item.description = productName;
-                    }
-
-                    // Set sales rate
-                    item.rate = salesRate;
-                    item.current_stock = currentStock;
-                    item.unit = unit;
-
-                    // Calculate amount if quantity is already set
-                    if (item.quantity) {
-                        this.calculateAmount(index);
-                    }
-                }
-            } else {
-                // Clear related fields when product is deselected
-                item.current_stock = null;
-                item.unit = 'Pcs';
-            }
-        },
-
-        calculateAmount(index) {
-            const item = this.items[index];
-            const quantity = parseFloat(item.quantity) || 0;
-            const rate = parseFloat(item.rate) || 0;
-            item.amount = (quantity * rate).toFixed(2);
-        },
-
-        init() {
-            console.log('✅ Invoice items component initialized');
-        }
-    }
-};
-</script>
+<!-- Invoice Items JavaScript is in the main create.blade.php file -->

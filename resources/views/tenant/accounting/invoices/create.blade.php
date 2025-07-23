@@ -1,15 +1,15 @@
 @extends('layouts.tenant')
 
-@section('title', 'Create Sales Invoice - ' . $tenant->name)
+@section('title', 'Create Invoice - ' . $tenant->name)
 
 @section('content')
 <div class="space-y-6" x-data="invoiceForm()">
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Create Sales Invoice</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Create Invoice</h1>
             <p class="mt-1 text-sm text-gray-500">
-                Create a new sales invoice with inventory management
+                Create a new invoice with inventory management
             </p>
         </div>
         <div class="flex items-center space-x-3">
@@ -109,13 +109,13 @@
                         <label for="customer_id" class="block text-sm font-medium text-gray-700 mb-2">
                             Customer
                         </label>
-                        <select name="customer_id"
+                        <select required name="customer_id"
                                 id="customer_id"
                                 class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 rounded-lg">
-                            <option value="">Select Customer (Optional)</option>
+                            <option value="">Select Customer</option>
                             @foreach($customers as $customer)
-                                <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
-                                    {{ $customer->name }}
+                                <option value="{{ $customer->ledgerAccount->id }}" {{ old('ledger_account_id') == $customer->id ? 'selected' : '' }}>
+                                    {{ $customer->ledgerAccount->name }}
                                 </option>
                             @endforeach
                         </select>
@@ -128,7 +128,7 @@
                         </label>
                         <textarea name="narration"
                                   id="narration"
-                                  rows="3"
+                                  rows="1"
                                   class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-primary-500 focus:border-primary-500 @error('narration') border-red-300 @enderror"
                                   placeholder="Invoice description or notes">{{ old('narration') }}</textarea>
                         @error('narration')
@@ -183,6 +183,120 @@
 
 @push('scripts')
 <script>
+// Invoice Items Component
+window.invoiceItems = function() {
+    return {
+        items: [
+            {
+                product_id: '',
+                description: '',
+                quantity: '',
+                rate: '',
+                amount: '',
+                current_stock: null,
+                unit: 'Pcs'
+            }
+        ],
+
+        get totalAmount() {
+            const total = this.items.reduce((sum, item) => {
+                return sum + (parseFloat(item.amount) || 0);
+            }, 0);
+
+            // Notify parent component about total change
+            this.$nextTick(() => {
+                document.dispatchEvent(new CustomEvent('inventory-total-updated', {
+                    detail: { total: total }
+                }));
+            });
+
+            return total;
+        },
+
+        get hasStockWarnings() {
+            return this.items.some(item => {
+                return item.product_id &&
+                       item.quantity &&
+                       item.current_stock !== null &&
+                       parseFloat(item.quantity) > parseFloat(item.current_stock);
+            });
+        },
+
+        formatNumber(num) {
+            if (!num || isNaN(num)) return '0.00';
+            return parseFloat(num).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        },
+
+        addItem() {
+            this.items.push({
+                product_id: '',
+                description: '',
+                quantity: '',
+                rate: '',
+                amount: '',
+                current_stock: null,
+                unit: 'Pcs'
+            });
+        },
+
+        removeItem(index) {
+            if (this.items.length > 1) {
+                this.items.splice(index, 1);
+            }
+        },
+
+        updateProductDetails(index) {
+            const item = this.items[index];
+            if (item.product_id) {
+                const selectElement = document.querySelector(`select[name="inventory_items[${index}][product_id]"]`);
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+                if (selectedOption) {
+                    const productName = selectedOption.getAttribute('data-name');
+                    const salesRate = selectedOption.getAttribute('data-sales-rate');
+                    const currentStock = selectedOption.getAttribute('data-stock');
+                    const unit = selectedOption.getAttribute('data-unit');
+
+                    // Set description if empty
+                    if (!item.description) {
+                        item.description = productName;
+                    }
+
+                    // Set sales rate
+                    item.rate = salesRate;
+                    item.current_stock = currentStock;
+                    item.unit = unit;
+
+                    // Calculate amount if quantity is already set
+                    if (item.quantity) {
+                        this.calculateAmount(index);
+                    }
+                }
+            } else {
+                // Clear related fields when product is deselected
+                item.current_stock = null;
+                item.unit = 'Pcs';
+            }
+        },
+
+        calculateAmount(index) {
+            const item = this.items[index];
+            const quantity = parseFloat(item.quantity) || 0;
+            const rate = parseFloat(item.rate) || 0;
+            item.amount = (quantity * rate).toFixed(2);
+        },
+
+        init() {
+            console.log('✅ Invoice items component initialized');
+            console.log('Initial items:', this.items);
+        }
+    }
+};
+
+// Main Invoice Form Component
 function invoiceForm() {
     return {
         voucherTypeId: '{{ old('voucher_type_id', $selectedType?->id ?? '') }}',

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Tenant;
+namespace App\Http\Controllers\Tenant\Accounting;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\Voucher;
 use App\Models\VoucherType;
 use App\Models\VoucherEntry;
@@ -55,10 +56,9 @@ class InvoiceController extends Controller
     public function create(Tenant $tenant)
     {
         // Get sales voucher types that affect inventory
-        $voucherTypes = VoucherType::where('tenant_id', $tenant->id)
+      $voucherTypes = VoucherType::where('tenant_id', $tenant->id)
             ->where('affects_inventory', true)
-            ->where('code', 'LIKE', '%SALES%')
-            ->orderBy('name')
+            ->orderBy('name', 'desc')
             ->get();
 
         // Get products
@@ -70,7 +70,7 @@ class InvoiceController extends Controller
             ->get();
 
         // Get customers (if you have a Customer model)
-        $customers = collect(); // Replace with actual customer query when implemented
+        $customers = Customer::with('ledgerAccount')->where('tenant_id', $tenant->id)->get();
 
         // Get default sales voucher type
         $selectedType = $voucherTypes->where('code', 'SALES')->first() ?? $voucherTypes->first();

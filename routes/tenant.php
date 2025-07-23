@@ -11,7 +11,7 @@ use App\Http\Controllers\Tenant\DashboardController;
 use App\Http\Controllers\Tenant\OnboardingController;
 use App\Http\Controllers\Tenant\ProductController;
 use App\Http\Controllers\Tenant\Crm\CustomerController;
-use App\Http\Controllers\Tenant\InvoiceController;
+use App\Http\Controllers\Tenant\Accounting\InvoiceController;
 use App\Http\Controllers\Tenant\HelpController;
 use App\Http\Controllers\Tenant\SupportController;
 use App\Http\Controllers\Tenant\CommunityController;
