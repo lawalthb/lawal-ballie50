@@ -346,7 +346,7 @@
                             Help
                         </button>
                     </div>
-                    
+
                     <!-- AI Assistant Button -->
                     <button type="button"
                             onclick="toggleAccountAI()"
@@ -354,7 +354,7 @@
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                         </svg>
-                        Ask AI for Account Code & Setup
+                        Ask Ballie AI for Account Code & Setup
                     </button>
 
                     <!-- Account Code Generator -->
@@ -406,7 +406,7 @@
                                 </svg>
                             </button>
                         </div>
-                        
+
                         <!-- AI Chat Interface -->
                         <div class="space-y-3">
                             <div class="bg-white rounded-lg p-3 border">
@@ -423,7 +423,7 @@
                                     <button type="button"
                                             onclick="askAccountAI()"
                                             class="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700">
-                                        Ask AI
+                                        Ask Ballie
                                     </button>
                                 </div>
                             </div>
@@ -445,7 +445,7 @@
                                 </svg>
                             </button>
                         </div>
-                        
+
                         <div class="space-y-3 text-sm">
                             <div class="flex items-start bg-white p-3 rounded border">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-3 mt-0.5">Asset</span>
@@ -820,7 +820,7 @@ window.askAccountAI = function() {
 
     const responseDiv = document.getElementById('ai-response');
     const responseContent = document.getElementById('ai-response-content');
-    
+
     // Show loading state
     responseDiv.classList.remove('hidden');
     responseContent.innerHTML = `
@@ -842,7 +842,7 @@ window.askAccountAI = function() {
 
 function generateAIResponse(question) {
     const lowerQuestion = question.toLowerCase();
-    
+
     // Expense account suggestions
     if (lowerQuestion.includes('expense') || lowerQuestion.includes('cost') || lowerQuestion.includes('salary') || lowerQuestion.includes('rent') || lowerQuestion.includes('utilities')) {
         const suggestedCode = getNextAccountCode('5');
@@ -858,11 +858,11 @@ function generateAIResponse(question) {
                     </div>
                 </div>
                 <div class="flex space-x-2">
-                    <button onclick="applyAISuggestion('${suggestedCode}', 'expense', 'dr')" 
+                    <button onclick="applyAISuggestion('${suggestedCode}', 'expense', 'dr')"
                             class="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700">
                         Apply Suggestion
                     </button>
-                    <button onclick="generateAccountCode()" 
+                    <button onclick="generateAccountCode()"
                             class="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
                         Generate Code
                     </button>
@@ -870,7 +870,7 @@ function generateAIResponse(question) {
             </div>
         `;
     }
-    
+
     // Asset account suggestions
     if (lowerQuestion.includes('asset') || lowerQuestion.includes('cash') || lowerQuestion.includes('bank') || lowerQuestion.includes('equipment')) {
         const suggestedCode = getNextAccountCode('1');
@@ -886,11 +886,11 @@ function generateAIResponse(question) {
                     </div>
                 </div>
                 <div class="flex space-x-2">
-                    <button onclick="applyAISuggestion('${suggestedCode}', 'asset', 'dr')" 
+                    <button onclick="applyAISuggestion('${suggestedCode}', 'asset', 'dr')"
                             class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">
                         Apply Suggestion
                     </button>
-                    <button onclick="generateAccountCode()" 
+                    <button onclick="generateAccountCode()"
                             class="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
                         Generate Code
                     </button>
@@ -898,7 +898,7 @@ function generateAIResponse(question) {
             </div>
         `;
     }
-    
+
     // Income account suggestions
     if (lowerQuestion.includes('income') || lowerQuestion.includes('revenue') || lowerQuestion.includes('sales') || lowerQuestion.includes('service')) {
         const suggestedCode = getNextAccountCode('4');
@@ -914,11 +914,11 @@ function generateAIResponse(question) {
                     </div>
                 </div>
                 <div class="flex space-x-2">
-                    <button onclick="applyAISuggestion('${suggestedCode}', 'income', 'cr')" 
+                    <button onclick="applyAISuggestion('${suggestedCode}', 'income', 'cr')"
                             class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
                         Apply Suggestion
                     </button>
-                    <button onclick="generateAccountCode()" 
+                    <button onclick="generateAccountCode()"
                             class="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
                         Generate Code
                     </button>
@@ -926,7 +926,7 @@ function generateAIResponse(question) {
             </div>
         `;
     }
-    
+
     // Liability account suggestions
     if (lowerQuestion.includes('liability') || lowerQuestion.includes('payable') || lowerQuestion.includes('loan') || lowerQuestion.includes('debt')) {
         const suggestedCode = getNextAccountCode('2');
@@ -942,11 +942,11 @@ function generateAIResponse(question) {
                     </div>
                 </div>
                 <div class="flex space-x-2">
-                    <button onclick="applyAISuggestion('${suggestedCode}', 'liability', 'cr')" 
+                    <button onclick="applyAISuggestion('${suggestedCode}', 'liability', 'cr')"
                             class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
                         Apply Suggestion
                     </button>
-                    <button onclick="generateAccountCode()" 
+                    <button onclick="generateAccountCode()"
                             class="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
                         Generate Code
                     </button>
@@ -954,7 +954,7 @@ function generateAIResponse(question) {
             </div>
         `;
     }
-    
+
     // Equity account suggestions
     if (lowerQuestion.includes('equity') || lowerQuestion.includes('capital') || lowerQuestion.includes('owner')) {
         const suggestedCode = getNextAccountCode('3');
@@ -970,11 +970,11 @@ function generateAIResponse(question) {
                     </div>
                 </div>
                 <div class="flex space-x-2">
-                    <button onclick="applyAISuggestion('${suggestedCode}', 'equity', 'cr')" 
+                    <button onclick="applyAISuggestion('${suggestedCode}', 'equity', 'cr')"
                             class="px-3 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700">
                         Apply Suggestion
                     </button>
-                    <button onclick="generateAccountCode()" 
+                    <button onclick="generateAccountCode()"
                             class="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
                         Generate Code
                     </button>
@@ -982,7 +982,7 @@ function generateAIResponse(question) {
             </div>
         `;
     }
-    
+
     // General help
     return `
         <div class="space-y-3">
@@ -1008,14 +1008,14 @@ window.applyAISuggestion = function(code, accountType, balanceType) {
     document.getElementById('code').value = code;
     document.getElementById('account_type').value = accountType;
     document.getElementById('balance_type').value = balanceType;
-    
+
     // Trigger account type change to filter account groups
     const accountTypeSelect = document.getElementById('account_type');
     accountTypeSelect.dispatchEvent(new Event('change'));
-    
+
     // Show success message
     showNotification('AI suggestion applied successfully!', 'success');
-    
+
     // Close AI panel
     document.getElementById('account-ai-panel').classList.add('hidden');
 };
@@ -1034,7 +1034,7 @@ window.generateAccountCode = function() {
         alert('Please select an account type first.');
         return;
     }
-    
+
     let prefix = '';
     switch(accountType) {
         case 'asset': prefix = '1'; break;
@@ -1043,7 +1043,7 @@ window.generateAccountCode = function() {
         case 'income': prefix = '4'; break;
         case 'expense': prefix = '5'; break;
     }
-    
+
     if (prefix) {
         const newCode = getNextAccountCode(prefix);
         document.getElementById('code').value = newCode;
