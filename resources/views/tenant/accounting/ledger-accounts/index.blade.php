@@ -4,98 +4,192 @@
 
 @push('styles')
 <style>
-    /* Account Tree Styles */
-    .account-tree .account-item {
-        transition: background-color 0.15s ease-in-out;
+    /* Accounting Tree Styles */
+    .accounting-tree-container {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    .account-tree .account-item:hover {
-        background-color: #f9fafb;
+    .nature-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(8px);
     }
 
-    .account-tree .level-0 {
-        padding-left: 0;
+    .group-header {
+        transition: all 0.2s ease-in-out;
     }
 
-    .account-tree .level-1 {
-        padding-left: 1.5rem;
-        border-left: 2px solid #e5e7eb;
-        margin-left: 0.75rem;
+    .group-header:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
-    .account-tree .level-2 {
-        padding-left: 3rem;
-        border-left: 2px solid #e5e7eb;
-        margin-left: 1.5rem;
+    .account-row {
+        transition: all 0.2s ease-in-out;
+        border-left: 3px solid transparent;
     }
 
-    .account-tree .level-3 {
-        padding-left: 4.5rem;
-        border-left: 2px solid #e5e7eb;
-        margin-left: 2.25rem;
+    .account-row:hover {
+        border-left-color: #3b82f6;
+        transform: translateX(4px);
     }
 
-    /* Balance Colors */
+    .account-node[data-level="0"] .account-row {
+        background: linear-gradient(to right, #fafafa, #ffffff);
+        border-left-width: 4px;
+    }
+
+    .account-node[data-level="1"] .account-row {
+        background-color: #fcfcfc;
+        border-left-width: 3px;
+    }
+
+    .account-node[data-level="2"] .account-row {
+        background-color: #fdfdfd;
+        border-left-width: 2px;
+    }
+
+    /* Tree lines and connectors */
+    .group-accounts {
+        position: relative;
+    }
+
+    .group-accounts::before {
+        content: '';
+        position: absolute;
+        left: 12px;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: linear-gradient(to bottom, #e2e8f0, #f1f5f9);
+    }
+
+    .child-accounts {
+        position: relative;
+    }
+
+    .child-accounts::before {
+        content: '';
+        position: absolute;
+        left: -8px;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: #e2e8f0;
+    }
+
+    /* Toggle animations */
+    .group-toggle svg,
+    .account-toggle svg {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .group-toggle.expanded svg,
+    .account-toggle.expanded svg {
+        transform: rotate(90deg);
+    }
+
+    /* Balance display styling */
     .balance-positive {
         color: #059669;
-        font-weight: 500;
+        font-weight: 600;
     }
 
     .balance-negative {
         color: #dc2626;
-        font-weight: 500;
+        font-weight: 600;
     }
 
     .balance-zero {
-        color: #6b7280;
+        color: #64748b;
+        font-weight: 500;
     }
 
-    /* Toggle Button Animation */
-    .toggle-children svg {
-        transition: transform 0.2s ease-in-out;
+    /* Hover effects for actions */
+    .group:hover .opacity-0 {
+        opacity: 1;
     }
 
-    .toggle-children.expanded svg {
-        transform: rotate(90deg);
+    /* Account type badges */
+    .account-type-asset {
+        background-color: #dcfce7;
+        color: #166534;
     }
 
-    /* Custom scrollbar for better UX */
-    .overflow-x-auto::-webkit-scrollbar {
-        height: 8px;
+    .account-type-liability {
+        background-color: #fecaca;
+        color: #991b1b;
     }
 
-    .overflow-x-auto::-webkit-scrollbar-track {
+    .account-type-equity {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .account-type-income {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .account-type-expense {
+        background-color: #e9d5ff;
+        color: #7c2d12;
+    }
+
+    /* Custom scrollbar */
+    .accounting-tree-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .accounting-tree-container::-webkit-scrollbar-track {
         background: #f1f5f9;
         border-radius: 4px;
     }
 
-    .overflow-x-auto::-webkit-scrollbar-thumb {
+    .accounting-tree-container::-webkit-scrollbar-thumb {
         background: #cbd5e1;
         border-radius: 4px;
     }
 
-    .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    .accounting-tree-container::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
     }
 
-    /* Form focus states */
-    .form-checkbox:checked {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
-    }
-
-    .form-checkbox:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    /* Responsive table improvements */
+    /* Mobile responsiveness */
     @media (max-width: 768px) {
-        .account-tree .level-1,
-        .account-tree .level-2,
-        .account-tree .level-3 {
-            padding-left: 1rem;
-            margin-left: 0.5rem;
+        .nature-header {
+            padding: 1rem;
+        }
+        
+        .group-header {
+            padding: 0.75rem;
+        }
+        
+        .account-row {
+            padding: 0.75rem;
+        }
+        
+        .ml-6 { margin-left: 1rem; }
+        .ml-12 { margin-left: 1.5rem; }
+        .ml-18 { margin-left: 2rem; }
+        .ml-24 { margin-left: 2.5rem; }
+    }
+
+    /* Print styles */
+    @media print {
+        .nature-header {
+            background: white !important;
+            border: 1px solid #000 !important;
+        }
+        
+        .account-row {
+            background: white !important;
+            border: 1px solid #ccc !important;
+        }
+        
+        .opacity-0 {
+            display: none !important;
         }
     }
 </style>

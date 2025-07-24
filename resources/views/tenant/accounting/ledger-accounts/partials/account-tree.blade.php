@@ -1,175 +1,116 @@
-<div class="p-6">
-    @forelse($accounts as $account)
-        <div class="account-item border-b border-gray-100 last:border-b-0" data-account-id="{{ $account->id }}">
-            <div class="py-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center flex-1">
-                        @if($account->hasChildren())
-                            <button class="mr-3 p-1 rounded hover:bg-gray-100 toggle-children" type="button">
-                                <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </button>
-                        @else
-                            <div class="w-6 h-6 mr-3"></div>
-                        @endif
+@php
+    // Group accounts by their account type and parent relationship for better tree structure
+    $groupedAccounts = $accounts->groupBy(function($account) {
+        return $account->accountGroup->nature ?? 'other';
+    });
+    
+    // Define the order of account nature for display
+    $natureOrder = ['assets', 'liabilities', 'equity', 'income', 'expense'];
+    $natureLabels = [
+        'assets' => 'ASSETS',
+        'liabilities' => 'LIABILITIES', 
+        'equity' => 'EQUITY',
+        'income' => 'REVENUE',
+        'expense' => 'EXPENSES'
+    ];
+    $natureIcons = [
+        'assets' => 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z',
+        'liabilities' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+        'equity' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+        'income' => 'M7 11l5-9 5 9M12 2v7m0 0l4 4m-4 0l-4 4',
+        'expense' => 'M17 13l-5 5-5-5M12 18V6'
+    ];
+@endphp
 
-                        <div class="flex items-center space-x-4 flex-1">
-                            <div class="flex-1">
-                                <div class="flex items-center space-x-3">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                        {{ $account->code }}
-                                    </span>
-                                    <h3 class="text-sm font-medium text-gray-900">{{ $account->name }}</h3>
-                                    @if(!$account->is_active)
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                            Inactive
-                                        </span>
-                                    @endif
+<div class="accounting-tree-container">
+    @forelse($groupedAccounts as $nature => $natureAccounts)
+        @if(in_array($nature, $natureOrder))
+            <div class="nature-group mb-8">
+                <!-- Nature Header -->
+                <div class="nature-header bg-gradient-to-r from-slate-50 to-slate-100 border-l-4 border-slate-400 px-6 py-4 mb-4 rounded-r-lg">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-slate-200 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $natureIcons[$nature] ?? 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' }}"></path>
+                                    </svg>
                                 </div>
-                                @if($account->description)
-                                    <p class="mt-1 text-xs text-gray-500">{{ Str::limit($account->description, 60) }}</p>
-                                @endif
                             </div>
-
-                            <div class="flex items-center space-x-6 text-sm">
-                                <div class="text-center">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                        {{ $account->account_type === 'asset' ? 'bg-green-100 text-green-800' :
-                                           ($account->account_type === 'liability' ? 'bg-red-100 text-red-800' :
-                                           ($account->account_type === 'equity' ? 'bg-yellow-100 text-yellow-800' :
-                                           ($account->account_type === 'income' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'))) }}">
-                                        {{ ucfirst($account->account_type) }}
-                                    </span>
-                                </div>
-
-                                <div class="text-center min-w-0">
-                                    <p class="text-xs text-gray-500">Group</p>
-                                    <p class="text-xs font-medium text-gray-900 truncate">{{ $account->accountGroup->name ?? 'N/A' }}</p>
-                                </div>
-
-                                <div class="text-right min-w-0">
-                                    @php
-                                        $balance = $account->getCurrentBalance();
-                                        $balanceClass = $balance > 0 ? 'text-green-600' : ($balance < 0 ? 'text-red-600' : 'text-gray-500');
-                                    @endphp
-                                    <p class="text-xs text-gray-500">Balance</p>
-                                    <p class="text-sm font-medium {{ $balanceClass }}">
-                                        {{ number_format(abs($balance), 2) }}
-                                        <span class="text-xs">{{ $balance >= 0 ? 'Dr' : 'Cr' }}</span>
-                                    </p>
-                                </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800 uppercase tracking-wider">{{ $natureLabels[$nature] ?? ucfirst($nature) }}</h2>
+                                <p class="text-sm text-slate-600">{{ $natureAccounts->count() }} {{ Str::plural('account', $natureAccounts->count()) }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            @php
+                                $totalBalance = $natureAccounts->sum(fn($account) => $account->getCurrentBalance());
+                                $balanceClass = $totalBalance > 0 ? 'text-green-700' : ($totalBalance < 0 ? 'text-red-700' : 'text-slate-600');
+                            @endphp
+                            <div class="text-sm text-slate-600">Total Balance</div>
+                            <div class="text-lg font-bold {{ $balanceClass }}">
+                                ₦{{ number_format(abs($totalBalance), 2) }}
+                                <span class="text-sm font-normal">{{ $totalBalance >= 0 ? 'Dr' : 'Cr' }}</span>
                             </div>
                         </div>
                     </div>
-
-                    <div class="flex items-center space-x-2 ml-4">
-                        <a href="{{ route('tenant.accounting.ledger-accounts.show', [$tenant, $account]) }}"
-                           class="inline-flex items-center p-1.5 border border-transparent text-xs font-medium rounded text-primary-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                        </a>
-                        <a href="{{ route('tenant.accounting.ledger-accounts.edit', [$tenant, $account]) }}"
-                           class="inline-flex items-center p-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                            </svg>
-                        </a>
-                        <button type="button"
-                                onclick="confirmDelete('{{ $account->id }}', '{{ $account->name }}')"
-                                class="inline-flex items-center p-1.5 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                    </div>
                 </div>
 
-                <!-- Children Accounts -->
-                @if($account->children->count() > 0)
-                    <div class="children-accounts ml-8 mt-4 space-y-3" style="display: none;">
-                        @foreach($account->children as $child)
-                            <div class="border-l-2 border-gray-200 pl-4">
-                                <div class="flex items-center justify-between py-2">
-                                    <div class="flex items-center space-x-4 flex-1">
-                                        <div class="flex-1">
-                                            <div class="flex items-center space-x-3">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                    {{ $child->code }}
-                                                </span>
-                                                <h4 class="text-sm font-medium text-gray-900">{{ $child->name }}</h4>
-                                                @if(!$child->is_active)
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                        Inactive
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            @if($child->description)
-                                                <p class="mt-1 text-xs text-gray-500">{{ Str::limit($child->description, 60) }}</p>
-                                            @endif
-                                        </div>
+                <!-- Account Groups within this Nature -->
+                @php
+                    $accountGroups = $natureAccounts->groupBy('account_group_id');
+                @endphp
+                
+                @foreach($accountGroups as $groupId => $groupAccounts)
+                    @php
+                        $accountGroup = $groupAccounts->first()->accountGroup;
+                        $parentAccounts = $groupAccounts->where('parent_id', null);
+                    @endphp
 
-                                        <div class="flex items-center space-x-6 text-sm">
-                                            <div class="text-center">
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                    {{ $child->account_type === 'asset' ? 'bg-green-100 text-green-800' :
-                                                       ($child->account_type === 'liability' ? 'bg-red-100 text-red-800' :
-                                                       ($child->account_type === 'equity' ? 'bg-yellow-100 text-yellow-800' :
-                                                       ($child->account_type === 'income' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'))) }}">
-                                                    {{ ucfirst($child->account_type) }}
-                                                </span>
-                                            </div>
-
-                                            <div class="text-center min-w-0">
-                                                <p class="text-xs text-gray-500">Group</p>
-                                                <p class="text-xs font-medium text-gray-900 truncate">{{ $child->accountGroup->name ?? 'N/A' }}</p>
-                                            </div>
-
-                                            <div class="text-right min-w-0">
-                                                @php
-                                                    $childBalance = $child->getCurrentBalance();
-                                                    $childBalanceClass = $childBalance > 0 ? 'text-green-600' : ($childBalance < 0 ? 'text-red-600' : 'text-gray-500');
-                                                @endphp
-                                                <p class="text-xs text-gray-500">Balance</p>
-                                                <p class="text-sm font-medium {{ $childBalanceClass }}">
-                                                    {{ number_format(abs($childBalance), 2) }}
-                                                    <span class="text-xs">{{ $childBalance >= 0 ? 'Dr' : 'Cr' }}</span>
-                                                </p>
-                                            </div>
-                                        </div>
+                    <div class="account-group mb-6">
+                        <!-- Group Header -->
+                        <div class="group-header bg-white border border-slate-200 rounded-lg px-4 py-3 mb-3 shadow-sm">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <button class="group-toggle p-1 rounded hover:bg-slate-100 transition-colors" type="button" onclick="toggleGroup(this)">
+                                        <svg class="w-4 h-4 text-slate-500 transition-transform duration-200 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
+                                        <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0v-3.5a1.5 1.5 0 013 0V21m-4-3h4"></path>
+                                        </svg>
                                     </div>
-
-                                    <div class="flex items-center space-x-2 ml-4">
-                                        <a href="{{ route('tenant.accounting.ledger-accounts.show', [$tenant, $child]) }}"
-                                           class="inline-flex items-center p-1.5 border border-transparent text-xs font-medium rounded text-primary-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                            </svg>
-                                        </a>
-                                        <a href="{{ route('tenant.accounting.ledger-accounts.edit', [$tenant, $child]) }}"
-                                           class="inline-flex items-center p-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                            </svg>
-                                        </a>
-                                        <button type="button"
-                                                onclick="confirmDelete('{{ $child->id }}', '{{ $child->name }}')"
-                                                class="inline-flex items-center p-1.5 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                            </svg>
-                                        </button>
+                                    <div>
+                                        <h3 class="font-semibold text-slate-800">{{ $accountGroup->name ?? 'Uncategorized' }}</h3>
+                                        <p class="text-sm text-slate-500">{{ $groupAccounts->count() }} {{ Str::plural('account', $groupAccounts->count()) }}</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    @php
+                                        $groupBalance = $groupAccounts->sum(fn($account) => $account->getCurrentBalance());
+                                        $groupBalanceClass = $groupBalance > 0 ? 'text-green-600' : ($groupBalance < 0 ? 'text-red-600' : 'text-slate-500');
+                                    @endphp
+                                    <div class="text-xs text-slate-500">Group Total</div>
+                                    <div class="text-sm font-semibold {{ $groupBalanceClass }}">
+                                        ₦{{ number_format(abs($groupBalance), 2) }}
+                                        <span class="text-xs">{{ $groupBalance >= 0 ? 'Dr' : 'Cr' }}</span>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
+
+                        <!-- Group Accounts -->
+                        <div class="group-accounts ml-4">
+                            @foreach($parentAccounts as $account)
+                                @include('tenant.accounting.ledger-accounts.partials.account-node', ['account' => $account, 'level' => 0, 'allAccounts' => $groupAccounts])
+                            @endforeach
+                        </div>
                     </div>
-                @endif
+                @endforeach
             </div>
-        </div>
+        @endif
     @empty
         <div class="text-center py-12">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,26 +146,118 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle children visibility
-    document.querySelectorAll('.toggle-children').forEach(function(button) {
-        button.addEventListener('click', function() {
-            const accountItem = this.closest('.account-item');
-            const childrenDiv = accountItem.querySelector('.children-accounts');
-            const icon = this.querySelector('svg');
-
-            if (childrenDiv.style.display === 'none') {
-                childrenDiv.style.display = 'block';
-                icon.style.transform = 'rotate(90deg)';
-            } else {
-                childrenDiv.style.display = 'none';
-                icon.style.transform = 'rotate(0deg)';
-            }
-        });
+    // Initialize tree state
+    initializeTreeState();
+    
+    // Auto-expand first level by default
+    document.querySelectorAll('.group-toggle').forEach(button => {
+        toggleGroup(button);
     });
 });
 
+// Function to toggle account group visibility
+function toggleGroup(button) {
+    const groupHeader = button.closest('.group-header');
+    const groupAccounts = groupHeader.nextElementSibling;
+    const icon = button.querySelector('svg');
+    
+    if (groupAccounts.classList.contains('hidden')) {
+        groupAccounts.classList.remove('hidden');
+        button.classList.add('expanded');
+        icon.style.transform = 'rotate(90deg)';
+    } else {
+        groupAccounts.classList.add('hidden');
+        button.classList.remove('expanded');
+        icon.style.transform = 'rotate(0deg)';
+    }
+    
+    // Save state to localStorage
+    saveTreeState();
+}
+
+// Function to toggle individual account visibility
+function toggleAccount(button) {
+    const accountNode = button.closest('.account-node');
+    const childAccounts = accountNode.querySelector('.child-accounts');
+    const icon = button.querySelector('svg');
+    
+    if (childAccounts && childAccounts.classList.contains('hidden')) {
+        childAccounts.classList.remove('hidden');
+        button.classList.add('expanded');
+        icon.style.transform = 'rotate(90deg)';
+    } else if (childAccounts) {
+        childAccounts.classList.add('hidden');
+        button.classList.remove('expanded');
+        icon.style.transform = 'rotate(0deg)';
+    }
+    
+    // Save state to localStorage
+    saveTreeState();
+}
+
+// Function to save tree state to localStorage
+function saveTreeState() {
+    const expandedGroups = [];
+    const expandedAccounts = [];
+    
+    // Save expanded groups
+    document.querySelectorAll('.group-toggle.expanded').forEach(button => {
+        const groupHeader = button.closest('.group-header');
+        const groupName = groupHeader.querySelector('h3').textContent.trim();
+        expandedGroups.push(groupName);
+    });
+    
+    // Save expanded accounts
+    document.querySelectorAll('.account-toggle.expanded').forEach(button => {
+        const accountNode = button.closest('.account-node');
+        const accountId = accountNode.getAttribute('data-account-id');
+        if (accountId) {
+            expandedAccounts.push(accountId);
+        }
+    });
+    
+    localStorage.setItem('accounting-tree-groups', JSON.stringify(expandedGroups));
+    localStorage.setItem('accounting-tree-accounts', JSON.stringify(expandedAccounts));
+}
+
+// Function to restore tree state from localStorage
+function initializeTreeState() {
+    try {
+        const expandedGroups = JSON.parse(localStorage.getItem('accounting-tree-groups') || '[]');
+        const expandedAccounts = JSON.parse(localStorage.getItem('accounting-tree-accounts') || '[]');
+        
+        // Restore group states
+        expandedGroups.forEach(groupName => {
+            const groupHeaders = document.querySelectorAll('.group-header h3');
+            groupHeaders.forEach(header => {
+                if (header.textContent.trim() === groupName) {
+                    const button = header.closest('.group-header').querySelector('.group-toggle');
+                    if (button) {
+                        toggleGroup(button);
+                    }
+                }
+            });
+        });
+        
+        // Restore account states
+        expandedAccounts.forEach(accountId => {
+            const accountNode = document.querySelector(`[data-account-id="${accountId}"]`);
+            if (accountNode) {
+                const button = accountNode.querySelector('.account-toggle');
+                if (button) {
+                    toggleAccount(button);
+                }
+            }
+        });
+        
+    } catch (error) {
+        console.warn('Failed to restore tree state:', error);
+    }
+}
+
+// Function to confirm account deletion
 function confirmDelete(accountId, accountName) {
-    if (confirm(`Are you sure you want to delete the account "${accountName}"?`)) {
+    if (confirm(`Are you sure you want to delete the account "${accountName}"? This action cannot be undone.`)) {
         // Create and submit delete form
         const form = document.createElement('form');
         form.method = 'POST';
@@ -246,4 +279,44 @@ function confirmDelete(accountId, accountName) {
         form.submit();
     }
 }
+
+// Function to expand all groups and accounts
+function expandAll() {
+    document.querySelectorAll('.group-toggle:not(.expanded)').forEach(button => {
+        toggleGroup(button);
+    });
+    
+    document.querySelectorAll('.account-toggle:not(.expanded)').forEach(button => {
+        toggleAccount(button);
+    });
+}
+
+// Function to collapse all groups and accounts
+function collapseAll() {
+    document.querySelectorAll('.account-toggle.expanded').forEach(button => {
+        toggleAccount(button);
+    });
+    
+    document.querySelectorAll('.group-toggle.expanded').forEach(button => {
+        toggleGroup(button);
+    });
+}
+
+// Add keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey || e.metaKey) {
+        switch(e.key) {
+            case 'e':
+                e.preventDefault();
+                expandAll();
+                break;
+            case 'c':
+                e.preventDefault();
+                collapseAll();
+                break;
+        }
+    }
+});
 </script>
+
+
