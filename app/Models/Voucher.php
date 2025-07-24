@@ -180,4 +180,10 @@ class Voucher extends Model
     return $this->hasMany(InvoiceItem::class);
 }
 
+public function updatedBy()
+{
+    return $this->belongsTo(User::class, 'updated_by');
+}
+
+
 }

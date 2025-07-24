@@ -35,27 +35,42 @@
 </section>
 
 <!-- Stats Section -->
-<section class="gradient-bg-2 text-white py-16 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="bg-gradient-to-r from-purple-400 via-blue-800 to-blue-200 text-white py-16 relative overflow-hidden">
+    <!-- Background overlay with subtle pattern -->
+    <div class="absolute inset-0 bg-black opacity-10 pattern-grid"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div class="stats-card rounded-2xl p-6 text-center">
-                <div class="text-3xl md:text-4xl font-bold mb-2 counter" data-target="8500">0</div>
-                <div class="text-gray-200 text-sm md:text-base">Nigerian Businesses Trust Ballie</div>
+            <!-- Business Trust Stats -->
+            <div class="stats-card bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center hover:bg-white/20 transition-all duration-300 shadow-xl">
+                <div class="text-3xl md:text-4xl font-bold mb-2 counter text-brand-gold" data-target="8500">0</div>
+                <div class="text-blue-100 text-sm md:text-base">Nigerian Businesses Trust Ballie</div>
             </div>
-            <div class="stats-card rounded-2xl p-6 text-center">
-                <div class="text-3xl md:text-4xl font-bold mb-2 counter" data-target="99.9">0</div>
-                <div class="text-gray-200 text-sm md:text-base">% Uptime Guarantee</div>
+
+            <!-- Uptime Stats -->
+            <div class="stats-card bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center hover:bg-white/20 transition-all duration-300 shadow-xl">
+                <div class="text-3xl md:text-4xl font-bold mb-2 counter text-green-400" data-target="99.9">0</div>
+                <div class="text-blue-100 text-sm md:text-base">% Uptime Guarantee</div>
             </div>
-            <div class="stats-card rounded-2xl p-6 text-center">
-                <div class="text-3xl md:text-4xl font-bold mb-2">24/7</div>
-                <div class="text-gray-200 text-sm md:text-base">Customer Support</div>
+
+            <!-- Support Stats -->
+            <div class="stats-card bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center hover:bg-white/20 transition-all duration-300 shadow-xl">
+                <div class="text-3xl md:text-4xl font-bold mb-2 text-purple-400">24/7</div>
+                <div class="text-blue-100 text-sm md:text-base">Customer Support</div>
             </div>
-            <div class="stats-card rounded-2xl p-6 text-center">
-                <div class="text-3xl md:text-4xl font-bold mb-2 counter" data-target="4.9">0</div>
-                <div class="text-gray-200 text-sm md:text-base">/5 Customer Rating</div>
+
+            <!-- Rating Stats -->
+            <div class="stats-card bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center hover:bg-white/20 transition-all duration-300 shadow-xl">
+                <div class="text-3xl md:text-4xl font-bold mb-2 counter text-yellow-400" data-target="4.9">0</div>
+                <div class="text-blue-100 text-sm md:text-base">/5 Customer Rating</div>
             </div>
         </div>
     </div>
+
+    <!-- Floating background elements -->
+    <div class="absolute top-0 left-0 w-64 h-64 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+    <div class="absolute top-0 right-0 w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+    <div class="absolute -bottom-32 left-1/2 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
 </section>
 
 <!-- Mission Section -->
@@ -671,7 +686,7 @@
             });
         });
 
- 
+
     });
 </script>
 @endsection

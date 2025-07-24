@@ -195,7 +195,7 @@
                         <svg class="w-5 h-5 feature-check mr-3" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="text-gray-700">Basic accounting features</span>
+                        <span class="text-gray-700">Basic accounting + AI assistance</span>
                     </div>
                     <div class="flex items-center">
                         <svg class="w-5 h-5 feature-check mr-3" fill="currentColor" viewBox="0 0 20 20">
@@ -226,6 +226,12 @@
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
                         <span class="text-gray-700">Mobile app access</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 feature-check mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-700">Basic AI Q&A assistant</span>
                     </div>
                 </div>
             </div>
@@ -280,7 +286,7 @@
                         <svg class="w-5 h-5 feature-check mr-3" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="text-gray-700">Advanced accounting features</span>
+                        <span class="text-gray-700">Advanced accounting + Full AI suite</span>
                     </div>
                     <div class="flex items-center">
                         <svg class="w-5 h-5 feature-check mr-3" fill="currentColor" viewBox="0 0 20 20">
@@ -323,6 +329,18 @@
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
                         <span class="text-gray-700">API access</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 feature-check mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-700">Full AI assistant suite</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 feature-check mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-700">Smart automation & templates</span>
                     </div>
                 </div>
             </div>
@@ -373,7 +391,7 @@
                         <svg class="w-5 h-5 feature-check mr-3" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="text-gray-700">Full accounting suite</span>
+                        <span class="text-gray-700">Full accounting + Advanced AI features</span>
                     </div>
                     <div class="flex items-center">
                         <svg class="w-5 h-5 feature-check mr-3" fill="currentColor" viewBox="0 0 20 20">
@@ -422,6 +440,18 @@
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
                         <span class="text-gray-700">Custom training & onboarding</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 feature-check mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-700">Enterprise AI & predictive analytics</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 feature-check mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-gray-700">Custom AI workflows & automation</span>
                     </div>
                 </div>
             </div>
@@ -498,6 +528,10 @@
                     <div class="flex items-center text-gray-200">
                         <span class="text-brand-gold mr-3 text-xl">✓</span>
                         <span>Data backup & security</span>
+                    </div>
+                    <div class="flex items-center text-gray-200">
+                        <span class="text-brand-gold mr-3 text-xl">✓</span>
+                        <span>AI-powered business insights</span>
                     </div>
                 </div>
             </div>
@@ -633,6 +667,12 @@
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                             </svg>
                         </td>
+                    </tr>
+                    <tr>
+                        <td class="p-6 font-medium text-gray-900">AI Assistant Features</td>
+                        <td class="p-6 text-center text-gray-600">Basic Q&A</td>
+                        <td class="p-6 text-center text-gray-600 bg-brand-gold bg-opacity-5">Full AI Suite</td>
+                        <td class="p-6 text-center text-gray-600">Enterprise AI + Custom</td>
                     </tr>
                     <tr>
                         <td class="p-6 font-medium text-gray-900">Support Level</td>

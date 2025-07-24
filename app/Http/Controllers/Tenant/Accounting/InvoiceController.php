@@ -228,13 +228,37 @@ class InvoiceController extends Controller
             ->orderBy('name')
             ->get();
 
-        Log::info('Found bank accounts for tenant', [
+        // Get payment vouchers related to this invoice
+        $invoiceReference = $invoice->voucherType->prefix . $invoice->voucher_number;
+        $payments = Voucher::where('tenant_id', $tenant->id)
+            ->whereHas('voucherType', function($q) {
+                $q->where('code', 'RV'); // Receipt Voucher
+            })
+            ->where(function($q) use ($invoiceReference) {
+                $q->where('narration', 'LIKE', '%' . $invoiceReference . '%')
+                  ->orWhereHas('entries', function($entryQuery) use ($invoiceReference) {
+                      $entryQuery->where('particulars', 'LIKE', '%' . $invoiceReference . '%');
+                  });
+            })
+            ->with(['voucherType', 'entries.ledgerAccount', 'createdBy'])
+            ->orderBy('voucher_date', 'desc')
+            ->get();
+
+        // Calculate total paid amount
+        $totalPaid = $payments->sum('total_amount');
+        $balanceDue = $invoice->total_amount - $totalPaid;
+
+        Log::info('Found bank accounts and payments for invoice', [
             'tenant_id' => $tenant->id,
+            'invoice_id' => $invoice->id,
+            'invoice_reference' => $invoiceReference,
             'bank_accounts_count' => $bankAccounts->count(),
-            'bank_accounts' => $bankAccounts->pluck('name', 'id')->toArray()
+            'payments_count' => $payments->count(),
+            'total_paid' => $totalPaid,
+            'balance_due' => $balanceDue
         ]);
 
-        return view('tenant.accounting.invoices.show', compact('tenant', 'invoice', 'bankAccounts'));
+        return view('tenant.accounting.invoices.show', compact('tenant', 'invoice', 'bankAccounts', 'payments', 'totalPaid', 'balanceDue'));
     }
 
     public function edit(Tenant $tenant, Voucher $invoice)

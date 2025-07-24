@@ -129,6 +129,113 @@
 <!-- Feature Categories -->
 <section class="section-spacing bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- AI Assistant Section -->
+        <div class="mb-20">
+            <div class="text-center mb-12">
+                <div class="w-20 h-20 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">AI-Powered Business Assistant</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Your intelligent business companion that learns, suggests, and automates to make your operations more efficient - <span class="text-purple-600 font-semibold">available 24/7 to help you succeed</span>.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="feature-card bg-white rounded-xl p-8 hover:shadow-brand">
+                    <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Smart Product Suggestions</h3>
+                    <p class="text-gray-600 mb-4">AI analyzes your sales patterns and customer behavior to suggest the right products for each invoice.</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Customer purchase history analysis</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Seasonal trend predictions</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Cross-selling recommendations</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card bg-white rounded-xl p-8 hover:shadow-brand">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Intelligent Data Validation</h3>
+                    <p class="text-gray-600 mb-4">Automatically validates invoice data, checks stock levels, and prevents errors before they occur.</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Real-time error detection</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Stock availability checks</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Price consistency validation</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card bg-white rounded-xl p-8 hover:shadow-brand">
+                    <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">24/7 Q&A Assistant</h3>
+                    <p class="text-gray-600 mb-4">Get instant answers to your business questions with context-aware AI assistance.</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Business-specific answers</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Context-aware responses</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Learning from your data</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card bg-white rounded-xl p-8 hover:shadow-brand">
+                    <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Smart Templates & Automation</h3>
+                    <p class="text-gray-600 mb-4">AI creates personalized templates and automates repetitive tasks based on your business patterns.</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Auto-generated workflows</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Personalized templates</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Task automation</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card bg-white rounded-xl p-8 hover:shadow-brand">
+                    <div class="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Predictive Analytics</h3>
+                    <p class="text-gray-600 mb-4">AI analyzes your data to predict trends, forecast sales, and provide actionable business insights.</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Sales forecasting</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Trend analysis</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Performance predictions</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card bg-white rounded-xl p-8 hover:shadow-brand">
+                    <div class="w-12 h-12 bg-gradient-to-r from-teal-500 to-green-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a1 1 0 01-1-1V9a1 1 0 011-1h1a2 2 0 100-4H4a1 1 0 01-1-1V4a1 1 0 011-1h3a1 1 0 001-1v1z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">AI-Powered Insights</h3>
+                    <p class="text-gray-600 mb-4">Get intelligent recommendations to optimize your business operations and increase profitability.</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Business optimization tips</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Cost reduction suggestions</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Revenue growth strategies</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Accounting Features -->
         <div class="mb-20">
             <div class="text-center mb-12">
@@ -137,9 +244,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                     </svg>
                 </div>
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Double-Entry Accounting</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">AI-Enhanced Double-Entry Accounting</h2>
                 <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-                    Professional accounting features with full Nigerian compliance and automated bookkeeping - <span class="text-brand-blue font-semibold">available 24/7 at an affordable price</span>.
+                    Professional accounting features with full Nigerian compliance, automated bookkeeping, and AI-powered insights - <span class="text-brand-blue font-semibold">available 24/7 at an affordable price</span>.
                 </p>
             </div>
 
@@ -165,11 +272,11 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Journal Entries</h3>
-                    <p class="text-gray-600 mb-4">Automated and manual journal entries with full audit trail and approval workflows.</p>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">AI-Assisted Journal Entries</h3>
+                    <p class="text-gray-600 mb-4">Automated and manual journal entries with AI suggestions, full audit trail and approval workflows.</p>
                     <ul class="text-sm text-gray-500 space-y-2">
-                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Automated entries</li>
-                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Manual adjustments</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> AI-generated entries</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Smart entry suggestions</li>
                         <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Approval workflows</li>
                     </ul>
                 </div>
@@ -244,9 +351,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                     </svg>
                 </div>
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Inventory Management</h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">AI-Smart Inventory Management</h2>
                 <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-                    Complete inventory control with real-time tracking, automated reordering, and detailed analytics - <span class="text-brand-teal font-semibold">always available when you need it</span>.
+                    Complete inventory control with real-time tracking, AI-powered reordering predictions, and intelligent analytics - <span class="text-brand-teal font-semibold">always available when you need it</span>.
                 </p>
             </div>
 
@@ -272,11 +379,11 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Automated Reordering</h3>
-                    <p class="text-gray-600 mb-4">Set reorder points and get automatic purchase suggestions to prevent stockouts.</p>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">AI-Powered Reordering</h3>
+                    <p class="text-gray-600 mb-4">Smart reorder predictions based on sales trends and seasonal patterns to prevent stockouts.</p>
                     <ul class="text-sm text-gray-500 space-y-2">
-                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Reorder points</li>
-                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Auto suggestions</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> AI reorder predictions</li>
+                        <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Smart suggestions</li>
                         <li class="flex items-center"><span class="text-brand-green mr-2">✓</span> Supplier integration</li>
                     </ul>
                 </div>

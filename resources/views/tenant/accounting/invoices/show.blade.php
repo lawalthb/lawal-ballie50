@@ -196,14 +196,108 @@
             </div>
         </div>
         <div class="p-6">
-            <!-- Payments List would go here if payments exist -->
-            <div class="text-center py-8">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">No payments recorded</h3>
-                <p class="mt-1 text-sm text-gray-500">Record a payment to track customer payments for this invoice.</p>
-            </div>
+            @if($payments && $payments->count() > 0)
+                <!-- Payment Summary -->
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600">₦{{ number_format($invoice->total_amount, 2) }}</div>
+                            <div class="text-sm text-gray-600">Invoice Total</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600">₦{{ number_format($totalPaid, 2) }}</div>
+                            <div class="text-sm text-gray-600">Total Paid</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold {{ $balanceDue > 0 ? 'text-red-600' : 'text-green-600' }}">₦{{ number_format($balanceDue, 2) }}</div>
+                            <div class="text-sm text-gray-600">Balance Due</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payments List -->
+                <div class="space-y-4">
+                    @foreach($payments as $payment)
+                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="bg-green-100 p-2 rounded-full">
+                                            <svg class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-medium text-gray-900">
+                                                {{ $payment->voucherType->name ?? 'Receipt' }} #{{ $payment->voucher_number }}
+                                            </h4>
+                                            <p class="text-sm text-gray-600">
+                                                Received on {{ \Carbon\Carbon::parse($payment->voucher_date)->format('M d, Y') }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-700">Payment Method:</span>
+                                            @php
+                                                $bankEntry = $payment->entries->where('debit_amount', '>', 0)->first();
+                                            @endphp
+                                            <span class="text-sm text-gray-600">{{ $bankEntry->ledgerAccount->name ?? 'N/A' }}</span>
+                                        </div>
+
+                                        @if($payment->reference_number)
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-700">Reference:</span>
+                                            <span class="text-sm text-gray-600">{{ $payment->reference_number }}</span>
+                                        </div>
+                                        @endif
+                                    </div>
+
+                                    @if($payment->narration)
+                                    <div class="mt-3">
+                                        <span class="text-sm font-medium text-gray-700">Notes:</span>
+                                        <p class="text-sm text-gray-600 mt-1">{{ $payment->narration }}</p>
+                                    </div>
+                                    @endif
+
+                                    <div class="mt-3 text-xs text-gray-500">
+                                        Recorded by {{ $payment->createdBy->name ?? 'System' }}
+                                        on {{ \Carbon\Carbon::parse($payment->created_at)->format('M d, Y g:i A') }}
+                                    </div>
+                                </div>
+
+                                <div class="text-right ml-4">
+                                    <div class="text-2xl font-bold text-green-600">
+                                        ₦{{ number_format($payment->total_amount, 2) }}
+                                    </div>
+                                    <div class="flex space-x-2 mt-2">
+                                        <a href="{{ route('tenant.accounting.vouchers.show', ['tenant' => $tenant->slug, 'voucher' => $payment->id]) }}"
+                                           class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                            View Receipt
+                                        </a>
+                                        @if($payment->status === 'posted')
+                                        <button onclick="printVoucher({{ $payment->id }})"
+                                                class="text-gray-600 hover:text-gray-800 text-sm font-medium">
+                                            Print
+                                        </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <!-- No Payments -->
+                <div class="text-center py-8">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No payments recorded</h3>
+                    <p class="mt-1 text-sm text-gray-500">Record a payment to track customer payments for this invoice.</p>
+                </div>
+            @endif
         </div>
     </div>
     @endif
@@ -260,14 +354,14 @@
     </div>
 
     <!-- Email Modal -->
-    <div x-show="showEmailModal" 
+    <div x-show="showEmailModal"
          x-transition:enter="ease-out duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
          x-transition:leave="ease-in duration-200"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-50 overflow-y-auto" 
+         class="fixed inset-0 z-50 overflow-y-auto"
          style="display: none;"
          @click.away="closeEmailModal()">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -289,22 +383,22 @@
                                 <div class="mt-4 space-y-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">To Email</label>
-                                        <input type="email" 
-                                               x-model="emailForm.to" 
+                                        <input type="email"
+                                               x-model="emailForm.to"
                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                                placeholder="customer@example.com"
                                                required>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Subject</label>
-                                        <input type="text" 
-                                               x-model="emailForm.subject" 
+                                        <input type="text"
+                                               x-model="emailForm.subject"
                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Message</label>
-                                        <textarea x-model="emailForm.message" 
-                                                  rows="4" 
+                                        <textarea x-model="emailForm.message"
+                                                  rows="4"
                                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
                                     </div>
                                 </div>
@@ -312,11 +406,11 @@
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="submit" 
+                        <button type="submit"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                             Send Email
                         </button>
-                        <button type="button" 
+                        <button type="button"
                                 @click="closeEmailModal()"
                                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                             Cancel
@@ -328,14 +422,14 @@
     </div>
 
     <!-- Receipt Modal -->
-    <div x-show="showReceiptModal" 
+    <div x-show="showReceiptModal"
          x-transition:enter="ease-out duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
          x-transition:leave="ease-in duration-200"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-50 overflow-y-auto" 
+         class="fixed inset-0 z-50 overflow-y-auto"
          style="display: none;"
          @click.away="closeReceiptModal()">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -357,15 +451,15 @@
                                 <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Payment Date</label>
-                                        <input type="date" 
-                                               x-model="receiptForm.date" 
+                                        <input type="date"
+                                               x-model="receiptForm.date"
                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                                required>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Amount Received</label>
-                                        <input type="number" 
-                                               x-model="receiptForm.amount" 
+                                        <input type="number"
+                                               x-model="receiptForm.amount"
                                                step="0.01"
                                                min="0.01"
                                                :max="invoiceAmount"
@@ -375,7 +469,7 @@
                                     </div>
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700">Bank/Cash Account</label>
-                                        <select x-model="receiptForm.bank_account_id" 
+                                        <select x-model="receiptForm.bank_account_id"
                                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                                 required>
                                             <option value="">Select Bank/Cash Account</option>
@@ -386,15 +480,15 @@
                                     </div>
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700">Reference Number</label>
-                                        <input type="text" 
-                                               x-model="receiptForm.reference" 
+                                        <input type="text"
+                                               x-model="receiptForm.reference"
                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                                placeholder="Transaction reference">
                                     </div>
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700">Notes</label>
-                                        <textarea x-model="receiptForm.notes" 
-                                                  rows="3" 
+                                        <textarea x-model="receiptForm.notes"
+                                                  rows="3"
                                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                                   placeholder="Payment notes..."></textarea>
                                     </div>
@@ -403,11 +497,11 @@
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="submit" 
+                        <button type="submit"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
                             Record Payment
                         </button>
-                        <button type="button" 
+                        <button type="button"
                                 @click="closeReceiptModal()"
                                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                             Cancel
@@ -504,7 +598,13 @@ function invoiceShow() {
         downloadPDF() {
             window.open('{{ route("tenant.accounting.invoices.pdf", ["tenant" => $tenant->slug, "invoice" => $invoice->id]) }}', '_blank');
         }
-    }
+    };
+}
+
+function printVoucher(voucherId) {
+    // Create a print route for vouchers/receipts
+    const printUrl = `/{{ $tenant->slug }}/vouchers/${voucherId}/pdf`;
+    window.open(printUrl, '_blank');
 }
 </script>
 @endpush
