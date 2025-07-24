@@ -188,7 +188,43 @@
                 </div>
             </div>
 
-            <!-- Slide 4 - Features Overview -->
+            <!-- Slide 4 - AI Assistant Focus -->
+            <div class="carousel-slide text-center">
+                <div class="flex items-center justify-center mb-8">
+                    <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center mr-6">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <h2 class="text-4xl md:text-5xl font-bold text-brand-gold mb-2">AI-Powered Assistant</h2>
+                        <p class="text-xl text-gray-200">Your intelligent business companion</p>
+                    </div>
+                </div>
+                <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                    Experience the future of business management with AI that learns your patterns, suggests improvements, and automates routine tasks.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <div class="bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-sm">
+                        <h3 class="text-lg font-semibold text-brand-gold mb-2">Smart Suggestions</h3>
+                        <p class="text-gray-300">AI recommends products and actions</p>
+                    </div>
+                    <div class="bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-sm">
+                        <h3 class="text-lg font-semibold text-brand-gold mb-2">Data Validation</h3>
+                        <p class="text-gray-300">Automatic error detection</p>
+                    </div>
+                    <div class="bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-sm">
+                        <h3 class="text-lg font-semibold text-brand-gold mb-2">Q&A Assistant</h3>
+                        <p class="text-gray-300">Get answers instantly</p>
+                    </div>
+                    <div class="bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-sm">
+                        <h3 class="text-lg font-semibold text-brand-gold mb-2">Smart Templates</h3>
+                        <p class="text-gray-300">Personalized workflows</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5 - Features Overview -->
             <div class="carousel-slide text-center">
                 <h2 class="text-4xl md:text-5xl font-bold mb-6">
                     <span class="text-brand-gold">All-in-One</span> Business Solution
@@ -203,8 +239,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-semibold text-brand-gold mb-2">Smart Invoicing</h3>
-                        <p class="text-gray-300 text-sm">Professional invoices in Naira</p>
+                        <h3 class="text-lg font-semibold text-brand-gold mb-2">AI-Smart Invoicing</h3>
+                        <p class="text-gray-300 text-sm">AI-powered invoice creation</p>
                     </div>
                     <div class="bg-white bg-opacity-10 p-6 rounded-lg backdrop-blur-sm">
                         <div class="w-12 h-12 bg-brand-teal rounded-lg flex items-center justify-center mb-4 mx-auto">
@@ -243,6 +279,7 @@
             <div class="carousel-indicator" onclick="currentSlide(2)"></div>
             <div class="carousel-indicator" onclick="currentSlide(3)"></div>
             <div class="carousel-indicator" onclick="currentSlide(4)"></div>
+            <div class="carousel-indicator" onclick="currentSlide(5)"></div>
         </div>
 
         <!-- Carousel Navigation Arrows -->
@@ -333,6 +370,10 @@
                         </div>
                         <div class="flex items-center">
                             <span class="text-brand-green mr-3">✓</span>
+                            <span class="text-gray-700">AI-powered business assistant</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-brand-green mr-3">✓</span>
                             <span class="text-gray-700">24/7 customer support</span>
                         </div>
                         <div class="flex items-center">
@@ -370,13 +411,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-3">Smart Invoicing</h3>
-                <p class="text-gray-600 mb-4">Create professional invoices in Naira, track payments, and send automated reminders to customers.</p>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">AI-Powered Smart Invoicing</h3>
+                <p class="text-gray-600 mb-4">Create professional invoices with AI assistance that suggests products, validates data, and automates routine tasks.</p>
                 <ul class="text-sm text-gray-500 space-y-1 mb-4">
-                    <li>• Naira currency support</li>
-                    <li>• Payment tracking</li>
-                    <li>• Automated reminders</li>
-                    <li>• Professional templates</li>
+                    <li>• AI-powered product suggestions</li>
+                    <li>• Smart data validation</li>
+                    <li>• Automated invoice generation</li>
+                    <li>• Q&A assistant for help</li>
                 </ul>
                 <a href="{{ route('features') }}" class="text-brand-blue hover:text-brand-purple font-medium">Learn more →</a>
             </div>
@@ -464,6 +505,125 @@
                     <li>• GDPR compliant</li>
                 </ul>
                 <a href="{{ route('features') }}" class="text-brand-blue hover:text-brand-purple font-medium">Learn more →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AI Assistant Section -->
+<section class="section-spacing bg-gradient-to-br from-indigo-50 to-purple-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full mb-6">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                </svg>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Meet Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">AI Business Assistant</span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Powered by advanced AI technology, Ballie doesn't just manage your business - it intelligently assists you every step of the way.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-8">
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Smart Product Suggestions</h3>
+                        <p class="text-gray-600">AI analyzes your inventory and customer patterns to suggest the right products for each invoice, saving you time and reducing errors.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Intelligent Data Validation</h3>
+                        <p class="text-gray-600">Automatically validates invoice data, checks stock levels, and alerts you to potential issues before they become problems.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">24/7 Q&A Assistant</h3>
+                        <p class="text-gray-600">Get instant answers to your business questions. Our AI assistant understands your business context and provides relevant guidance.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start">
+                    <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Smart Templates & Automation</h3>
+                        <p class="text-gray-600">AI learns from your business patterns to create personalized templates and automate repetitive tasks, making your workflow more efficient.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+                <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 rounded-lg text-white mb-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-semibold">AI-Powered Features</h4>
+                    </div>
+                    <p class="text-purple-100 text-sm">Your intelligent business companion that works 24/7</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center p-3 bg-purple-50 rounded-lg">
+                        <div class="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                        <span class="text-gray-700 text-sm">Suggests products based on customer history</span>
+                    </div>
+                    <div class="flex items-center p-3 bg-blue-50 rounded-lg">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                        <span class="text-gray-700 text-sm">Validates invoice data in real-time</span>
+                    </div>
+                    <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                        <span class="text-gray-700 text-sm">Answers business questions instantly</span>
+                    </div>
+                    <div class="flex items-center p-3 bg-orange-50 rounded-lg">
+                        <div class="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                        <span class="text-gray-700 text-sm">Creates personalized workflow templates</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <p class="text-sm text-gray-600 italic">
+                        "The AI assistant feels like having a business expert right beside me. It catches mistakes I might miss and suggests improvements I wouldn't have thought of."
+                    </p>
+                    <div class="flex items-center mt-3">
+                        <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center mr-2">
+                            <span class="text-white text-xs font-semibold">AM</span>
+                        </div>
+                        <div>
+                            <div class="text-xs font-semibold text-gray-900">Adebayo Mustapha</div>
+                            <div class="text-xs text-gray-500">Tech Entrepreneur</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -663,7 +823,7 @@
     function startAutoSlide() {
         slideInterval = setInterval(function() {
             slideIndex++;
-            if (slideIndex > 4) slideIndex = 1;
+            if (slideIndex > 5) slideIndex = 1;
             showSlides(slideIndex);
         }, 5000); // Change slide every 5 seconds
     }
