@@ -49,7 +49,31 @@ class SocialAuthController extends Controller
 
                 // Redirect based on onboarding status
                 if (!$user->onboarding_completed) {
+                    // For tenant-specific applications
+                    if (request()->is('*/auth/*')) {
+                        $tenant = request()->route('tenant');
+                        if ($tenant) {
+                            return redirect()->route('tenant.onboarding.index', ['tenant' => $tenant]);
+                        }
+                    }
+                    // For tenant-specific applications, we need to redirect to the tenant onboarding
+                    if (request()->is('*/auth/*')) {
+                        // If the request is coming from a tenant subdomain
+                        $tenant = request()->route('tenant');
+                        if ($tenant) {
+                            return redirect()->route('tenant.onboarding.index', ['tenant' => $tenant]);
+                        }
+                    }
+
                     return redirect()->route('onboarding.index');
+                }
+
+                // For tenant-specific applications
+                if (request()->is('*/auth/*')) {
+                    $tenant = request()->route('tenant');
+                    if ($tenant) {
+                        return redirect()->route('tenant.dashboard', ['tenant' => $tenant]);
+                    }
                 }
 
                 return redirect()->route('dashboard');
@@ -61,6 +85,9 @@ class SocialAuthController extends Controller
                     'password' => Hash::make(Str::random(24)), // Random password since they'll use social login
                     'email_verified_at' => now(), // Social accounts are pre-verified
                     'onboarding_completed' => false,
+                    'social_provider' => $provider,
+                    'social_provider_id' => $socialUser->getId(),
+                    'social_avatar' => $socialUser->getAvatar(),
                 ]);
 
                 Auth::login($user);

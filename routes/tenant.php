@@ -29,6 +29,7 @@ use App\Http\Controllers\Tenant\Crm\VendorController;
 use App\Http\Controllers\Tenant\UnitController;
 use App\Models\Tenant;
 use App\Http\Controllers\Tenant\Accounting\LedgerAccountController;
+use App\Http\Controllers\Auth\SocialAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +57,12 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('tenant.password.email');
     Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('tenant.password.reset');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('tenant.password.update');
+
+    // Social Authentication Routes
+    Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])->name('tenant.auth.redirect');
+    Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('tenant.auth.callback');
+    Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('tenant.auth.google');
+    Route::get('/auth/facebook', [SocialAuthController::class, 'redirectToFacebook'])->name('tenant.auth.facebook');
 });
 
 // Authenticated routes
@@ -97,7 +104,7 @@ Route::prefix('invoices')->name('invoices.')->group(function () {
     Route::get('/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('pdf');
     Route::post('/{invoice}/email', [InvoiceController::class, 'email'])->name('email');
     Route::post('/{invoice}/record-payment', [InvoiceController::class, 'recordPayment'])->name('record-payment');
-   
+
 
 
 });
