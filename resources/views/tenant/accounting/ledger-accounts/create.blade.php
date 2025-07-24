@@ -325,36 +325,163 @@
 
             <!-- Sidebar - Takes 1 column -->
             <div class="space-y-6">
-                <!-- Account Type Guide -->
-                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
-                    <div class="flex items-center mb-4">
-                        <div class="flex-shrink-0">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                <!-- AI Assistant & Account Guide -->
+                <div class="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="ml-3 text-lg font-medium text-purple-900">AI Account Assistant</h3>
+                        </div>
+                        <!-- Help Button -->
+                        <button type="button"
+                                onclick="toggleAccountingHelp()"
+                                class="inline-flex items-center px-3 py-2 border border-blue-300 text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                        </div>
-                        <h3 class="ml-3 text-lg font-medium text-blue-900">Account Types Guide</h3>
+                            Help
+                        </button>
                     </div>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex items-start">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-3 mt-0.5">Asset</span>
-                            <span class="text-blue-700">Resources owned by the business (Cash, Inventory, Equipment)</span>
+                    
+                    <!-- AI Assistant Button -->
+                    <button type="button"
+                            onclick="toggleAccountAI()"
+                            class="w-full inline-flex items-center justify-center px-4 py-3 border border-purple-300 text-sm font-medium rounded-lg text-purple-700 bg-purple-50 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 mb-4">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                        Ask AI for Account Code & Setup
+                    </button>
+
+                    <!-- Account Code Generator -->
+                    <div class="bg-white rounded-lg p-4 border border-purple-100 mb-4">
+                        <h4 class="text-sm font-semibold text-purple-800 mb-3">🎯 Smart Code Generator</h4>
+                        <div class="space-y-2 text-xs text-purple-700">
+                            <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                                <span><strong>Asset:</strong> 1XXX</span>
+                                <span class="text-green-600">e.g., 1001 - Cash</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-red-50 rounded">
+                                <span><strong>Liability:</strong> 2XXX</span>
+                                <span class="text-red-600">e.g., 2001 - Payable</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-yellow-50 rounded">
+                                <span><strong>Equity:</strong> 3XXX</span>
+                                <span class="text-yellow-600">e.g., 3001 - Capital</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-blue-50 rounded">
+                                <span><strong>Income:</strong> 4XXX</span>
+                                <span class="text-blue-600">e.g., 4001 - Sales</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-purple-50 rounded">
+                                <span><strong>Expense:</strong> 5XXX</span>
+                                <span class="text-purple-600">e.g., 5001 - Salary</span>
+                            </div>
                         </div>
-                        <div class="flex items-start">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mr-3 mt-0.5">Liability</span>
-                            <span class="text-blue-700">Debts owed by the business (Loans, Accounts Payable)</span>
+                        <button type="button"
+                                onclick="generateAccountCode()"
+                                class="w-full mt-3 px-3 py-2 text-xs font-medium text-purple-700 bg-purple-100 rounded hover:bg-purple-200 transition-colors">
+                            🔄 Generate Next Available Code
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI Assistant Panel -->
+                <div id="account-ai-panel" class="hidden bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-semibold text-purple-800 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                                🤖 AI Assistant
+                            </h4>
+                            <button onclick="toggleAccountAI()" class="text-purple-600 hover:text-purple-800">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
                         </div>
-                        <div class="flex items-start">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 mr-3 mt-0.5">Equity</span>
-                            <span class="text-blue-700">Owner's stake in the business (Capital, Retained Earnings)</span>
+                        
+                        <!-- AI Chat Interface -->
+                        <div class="space-y-3">
+                            <div class="bg-white rounded-lg p-3 border">
+                                <textarea id="ai-question"
+                                         class="w-full p-2 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                         rows="3"
+                                         placeholder="Ask AI: 'Help me create a Utilities Expense account' or 'What code should I use for Office Rent?'"></textarea>
+                                <div class="flex justify-between items-center mt-2">
+                                    <button type="button"
+                                            onclick="clearAIChat()"
+                                            class="text-xs text-gray-500 hover:text-gray-700">
+                                        Clear
+                                    </button>
+                                    <button type="button"
+                                            onclick="askAccountAI()"
+                                            class="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700">
+                                        Ask AI
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="ai-response" class="hidden bg-white rounded-lg p-3 border border-green-200">
+                                <div id="ai-response-content"></div>
+                            </div>
                         </div>
-                        <div class="flex items-start">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-3 mt-0.5">Income</span>
-                            <span class="text-blue-700">Revenue earned by the business (Sales, Service Income)</span>
+                    </div>
+                </div>
+
+                <!-- Account Types Help Panel -->
+                <div id="accounting-help-panel" class="hidden bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-semibold text-blue-800">📚 Account Types Guide</h4>
+                            <button onclick="toggleAccountingHelp()" class="text-blue-600 hover:text-blue-800">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
                         </div>
-                        <div class="flex items-start">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mr-3 mt-0.5">Expense</span>
-                            <span class="text-blue-700">Costs incurred by the business (Rent, Utilities, Salaries)</span>
+                        
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-start bg-white p-3 rounded border">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-3 mt-0.5">Asset</span>
+                                <div>
+                                    <div class="font-medium text-green-800">Resources owned by the business</div>
+                                    <div class="text-green-600 text-xs">Cash, Bank, Inventory, Equipment, Buildings</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start bg-white p-3 rounded border">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mr-3 mt-0.5">Liability</span>
+                                <div>
+                                    <div class="font-medium text-red-800">Debts owed by the business</div>
+                                    <div class="text-red-600 text-xs">Loans, Accounts Payable, Accrued Expenses</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start bg-white p-3 rounded border">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 mr-3 mt-0.5">Equity</span>
+                                <div>
+                                    <div class="font-medium text-yellow-800">Owner's stake in the business</div>
+                                    <div class="text-yellow-600 text-xs">Capital, Retained Earnings, Owner's Equity</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start bg-white p-3 rounded border">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-3 mt-0.5">Income</span>
+                                <div>
+                                    <div class="font-medium text-blue-800">Revenue earned by the business</div>
+                                    <div class="text-blue-600 text-xs">Sales, Service Income, Interest Income</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start bg-white p-3 rounded border">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mr-3 mt-0.5">Expense</span>
+                                <div>
+                                    <div class="font-medium text-purple-800">Costs incurred by the business</div>
+                                    <div class="text-purple-600 text-xs">Rent, Utilities, Salaries, Office Supplies</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -662,6 +789,296 @@ function accountForm() {
             }, 5000);
         }
     }
+}
+
+// AI Assistant Functions
+window.toggleAccountAI = function() {
+    const panel = document.getElementById('account-ai-panel');
+    panel.classList.toggle('hidden');
+    if (!panel.classList.contains('hidden')) {
+        document.getElementById('ai-question').focus();
+    }
+};
+
+window.toggleAccountingHelp = function() {
+    const panel = document.getElementById('accounting-help-panel');
+    panel.classList.toggle('hidden');
+};
+
+window.clearAIChat = function() {
+    document.getElementById('ai-question').value = '';
+    document.getElementById('ai-response').classList.add('hidden');
+    document.getElementById('ai-question').focus();
+};
+
+window.askAccountAI = function() {
+    const question = document.getElementById('ai-question').value.trim();
+    if (!question) {
+        alert('Please enter a question for the AI assistant.');
+        return;
+    }
+
+    const responseDiv = document.getElementById('ai-response');
+    const responseContent = document.getElementById('ai-response-content');
+    
+    // Show loading state
+    responseDiv.classList.remove('hidden');
+    responseContent.innerHTML = `
+        <div class="flex items-center text-purple-600">
+            <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            AI is thinking...
+        </div>
+    `;
+
+    // Simulate AI response (in real implementation, this would call your AI API)
+    setTimeout(() => {
+        const aiResponse = generateAIResponse(question);
+        responseContent.innerHTML = aiResponse;
+    }, 1500);
+};
+
+function generateAIResponse(question) {
+    const lowerQuestion = question.toLowerCase();
+    
+    // Expense account suggestions
+    if (lowerQuestion.includes('expense') || lowerQuestion.includes('cost') || lowerQuestion.includes('salary') || lowerQuestion.includes('rent') || lowerQuestion.includes('utilities')) {
+        const suggestedCode = getNextAccountCode('5');
+        return `
+            <div class="space-y-3">
+                <h5 class="font-semibold text-purple-800 mb-2">🤖 AI Suggestion</h5>
+                <div class="bg-purple-50 p-3 rounded border-l-4 border-purple-400">
+                    <div class="font-medium text-purple-800">For Expense Accounts:</div>
+                    <div class="text-sm text-purple-600 mt-1">
+                        • Suggested Code: <strong>${suggestedCode}</strong><br>
+                        • Account Type: <strong>Expense</strong><br>
+                        • Balance Type: <strong>Debit (Dr)</strong>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="applyAISuggestion('${suggestedCode}', 'expense', 'dr')" 
+                            class="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700">
+                        Apply Suggestion
+                    </button>
+                    <button onclick="generateAccountCode()" 
+                            class="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
+                        Generate Code
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Asset account suggestions
+    if (lowerQuestion.includes('asset') || lowerQuestion.includes('cash') || lowerQuestion.includes('bank') || lowerQuestion.includes('equipment')) {
+        const suggestedCode = getNextAccountCode('1');
+        return `
+            <div class="space-y-3">
+                <h5 class="font-semibold text-green-800 mb-2">🤖 AI Suggestion</h5>
+                <div class="bg-green-50 p-3 rounded border-l-4 border-green-400">
+                    <div class="font-medium text-green-800">For Asset Accounts:</div>
+                    <div class="text-sm text-green-600 mt-1">
+                        • Suggested Code: <strong>${suggestedCode}</strong><br>
+                        • Account Type: <strong>Asset</strong><br>
+                        • Balance Type: <strong>Debit (Dr)</strong>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="applyAISuggestion('${suggestedCode}', 'asset', 'dr')" 
+                            class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">
+                        Apply Suggestion
+                    </button>
+                    <button onclick="generateAccountCode()" 
+                            class="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
+                        Generate Code
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Income account suggestions
+    if (lowerQuestion.includes('income') || lowerQuestion.includes('revenue') || lowerQuestion.includes('sales') || lowerQuestion.includes('service')) {
+        const suggestedCode = getNextAccountCode('4');
+        return `
+            <div class="space-y-3">
+                <h5 class="font-semibold text-blue-800 mb-2">🤖 AI Suggestion</h5>
+                <div class="bg-blue-50 p-3 rounded border-l-4 border-blue-400">
+                    <div class="font-medium text-blue-800">For Income Accounts:</div>
+                    <div class="text-sm text-blue-600 mt-1">
+                        • Suggested Code: <strong>${suggestedCode}</strong><br>
+                        • Account Type: <strong>Income</strong><br>
+                        • Balance Type: <strong>Credit (Cr)</strong>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="applyAISuggestion('${suggestedCode}', 'income', 'cr')" 
+                            class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                        Apply Suggestion
+                    </button>
+                    <button onclick="generateAccountCode()" 
+                            class="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
+                        Generate Code
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Liability account suggestions
+    if (lowerQuestion.includes('liability') || lowerQuestion.includes('payable') || lowerQuestion.includes('loan') || lowerQuestion.includes('debt')) {
+        const suggestedCode = getNextAccountCode('2');
+        return `
+            <div class="space-y-3">
+                <h5 class="font-semibold text-red-800 mb-2">🤖 AI Suggestion</h5>
+                <div class="bg-red-50 p-3 rounded border-l-4 border-red-400">
+                    <div class="font-medium text-red-800">For Liability Accounts:</div>
+                    <div class="text-sm text-red-600 mt-1">
+                        • Suggested Code: <strong>${suggestedCode}</strong><br>
+                        • Account Type: <strong>Liability</strong><br>
+                        • Balance Type: <strong>Credit (Cr)</strong>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="applyAISuggestion('${suggestedCode}', 'liability', 'cr')" 
+                            class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
+                        Apply Suggestion
+                    </button>
+                    <button onclick="generateAccountCode()" 
+                            class="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
+                        Generate Code
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Equity account suggestions
+    if (lowerQuestion.includes('equity') || lowerQuestion.includes('capital') || lowerQuestion.includes('owner')) {
+        const suggestedCode = getNextAccountCode('3');
+        return `
+            <div class="space-y-3">
+                <h5 class="font-semibold text-yellow-800 mb-2">🤖 AI Suggestion</h5>
+                <div class="bg-yellow-50 p-3 rounded border-l-4 border-yellow-400">
+                    <div class="font-medium text-yellow-800">For Equity Accounts:</div>
+                    <div class="text-sm text-yellow-600 mt-1">
+                        • Suggested Code: <strong>${suggestedCode}</strong><br>
+                        • Account Type: <strong>Equity</strong><br>
+                        • Balance Type: <strong>Credit (Cr)</strong>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="applyAISuggestion('${suggestedCode}', 'equity', 'cr')" 
+                            class="px-3 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700">
+                        Apply Suggestion
+                    </button>
+                    <button onclick="generateAccountCode()" 
+                            class="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
+                        Generate Code
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    // General help
+    return `
+        <div class="space-y-3">
+            <h5 class="font-semibold text-gray-800 mb-2">🤖 AI Assistant</h5>
+            <div class="bg-gray-50 p-3 rounded border-l-4 border-gray-400">
+                <div class="font-medium text-gray-800">I can help you with:</div>
+                <div class="text-sm text-gray-600 mt-2 space-y-1">
+                    • Suggest account codes for different account types<br>
+                    • Recommend account types based on your description<br>
+                    • Help with balance types (Debit vs Credit)<br>
+                    • Provide examples for specific accounts
+                </div>
+                <div class="mt-3 text-xs text-gray-500">
+                    Try asking: "Help me create a Utilities Expense account" or "What code should I use for Office Rent?"
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+window.applyAISuggestion = function(code, accountType, balanceType) {
+    // Apply the AI suggestion to the form
+    document.getElementById('code').value = code;
+    document.getElementById('account_type').value = accountType;
+    document.getElementById('balance_type').value = balanceType;
+    
+    // Trigger account type change to filter account groups
+    const accountTypeSelect = document.getElementById('account_type');
+    accountTypeSelect.dispatchEvent(new Event('change'));
+    
+    // Show success message
+    showNotification('AI suggestion applied successfully!', 'success');
+    
+    // Close AI panel
+    document.getElementById('account-ai-panel').classList.add('hidden');
+};
+
+function getNextAccountCode(prefix) {
+    // This would typically fetch from server to get next available code
+    // For now, we'll simulate it
+    const baseCode = prefix + '00';
+    const randomSuffix = Math.floor(Math.random() * 90) + 10; // 10-99
+    return baseCode + randomSuffix;
+}
+
+window.generateAccountCode = function() {
+    const accountType = document.getElementById('account_type').value;
+    if (!accountType) {
+        alert('Please select an account type first.');
+        return;
+    }
+    
+    let prefix = '';
+    switch(accountType) {
+        case 'asset': prefix = '1'; break;
+        case 'liability': prefix = '2'; break;
+        case 'equity': prefix = '3'; break;
+        case 'income': prefix = '4'; break;
+        case 'expense': prefix = '5'; break;
+    }
+    
+    if (prefix) {
+        const newCode = getNextAccountCode(prefix);
+        document.getElementById('code').value = newCode;
+        showNotification(`Generated code: ${newCode}`, 'success');
+    }
+};
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
+        type === 'error' ? 'bg-red-100 border border-red-400 text-red-700' :
+        type === 'success' ? 'bg-green-100 border border-green-400 text-green-700' :
+        'bg-blue-100 border border-blue-400 text-blue-700'
+    }`;
+
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <span>${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-current hover:opacity-70 flex-shrink-0">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
 }
 
 // Additional utility functions
