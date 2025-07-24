@@ -94,6 +94,11 @@ Route::prefix('invoices')->name('invoices.')->group(function () {
     Route::post('/{invoice}/post', [InvoiceController::class, 'post'])->name('post');
     Route::post('/{invoice}/unpost', [InvoiceController::class, 'unpost'])->name('unpost');
     Route::get('/{invoice}/print', [InvoiceController::class, 'print'])->name('print');
+    Route::get('/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('pdf');
+    Route::post('/{invoice}/email', [InvoiceController::class, 'email'])->name('email');
+    Route::post('/{invoice}/record-payment', [InvoiceController::class, 'recordPayment'])->name('record-payment');
+   
+
 
 });
 

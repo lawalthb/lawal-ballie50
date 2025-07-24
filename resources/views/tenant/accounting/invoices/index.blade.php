@@ -34,7 +34,7 @@
                            name="search"
                            id="search"
                            value="{{ request('search') }}"
-                           placeholder="Invoice number, reference..."
+                           placeholder="Invoice number, customer name, reference..."
                            class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm">
                 </div>
 
@@ -173,6 +173,9 @@
                                 Date
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Customer
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Reference
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -194,7 +197,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900">
-                                        {{ $invoice->voucherType->abbreviation }}-{{ $invoice->voucher_number }}
+                                        {{ $invoice->voucherType->prefix ?? $invoice->voucherType->abbreviation ?? '' }}{{ $invoice->voucher_number }}
                                     </div>
                                     <div class="text-sm text-gray-500">
                                         {{ $invoice->voucherType->name }}
@@ -202,6 +205,13 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $invoice->voucher_date->format('M d, Y') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    @php
+                                        $customerEntry = $invoice->entries->where('debit_amount', '>', 0)->first();
+                                        $customerName = $customerEntry?->ledgerAccount?->name ?? 'Cash Sale';
+                                    @endphp
+                                    {{ Str::limit($customerName, 25) }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     {{ $invoice->reference_number ?: '-' }}
@@ -249,7 +259,16 @@
                                            class="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50"
                                            title="Print Invoice">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H9.414a1 1 0 01-.707-.293l-2-2A1 1 0 005.586 6H4a2 2 0 00-2 2v4a2 2 0 002 2h2m3 4h6m-6-4h6m2-5H9m3 0V9"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                                            </svg>
+                                        </a>
+
+                                        <!-- Download PDF -->
+                                        <a href="{{ route('tenant.accounting.invoices.pdf', ['tenant' => $tenant->slug, 'invoice' => $invoice->id]) }}"
+                                           class="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
+                                           title="Download PDF">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-4-4m4 4l4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                             </svg>
                                         </a>
 
@@ -259,7 +278,7 @@
                                                     class="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-50"
                                                     title="More Actions">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M106a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
                                                 </svg>
                                             </button>
 

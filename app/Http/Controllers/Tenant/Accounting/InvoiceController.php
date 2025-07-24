@@ -10,9 +10,13 @@ use App\Models\VoucherEntry;
 use App\Models\Product;
 use App\Models\LedgerAccount;
 use App\Models\Tenant;
+use App\Models\AccountGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
 {
@@ -20,10 +24,9 @@ class InvoiceController extends Controller
     {
         $query = Voucher::where('tenant_id', $tenant->id)
             ->whereHas('voucherType', function($q) {
-                $q->where('affects_inventory', true)
-                  ->where('code', 'LIKE', '%SALES%');
+                $q->where('affects_inventory', true);
             })
-            ->with(['voucherType', 'createdBy']);
+            ->with(['voucherType', 'createdBy', 'entries.ledgerAccount']);
 
         // Search
         if ($request->filled('search')) {
@@ -31,7 +34,10 @@ class InvoiceController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('voucher_number', 'like', "%{$search}%")
                   ->orWhere('reference_number', 'like', "%{$search}%")
-                  ->orWhere('narration', 'like', "%{$search}%");
+                  ->orWhere('narration', 'like', "%{$search}%")
+                  ->orWhereHas('entries.ledgerAccount', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', "%{$search}%");
+                  });
             });
         }
 
@@ -208,18 +214,27 @@ class InvoiceController extends Controller
             abort(404);
         }
 
-        $invoice->load(['voucherType', 'entries.ledgerAccount', 'createdBy', 'postedBy']);
+        $invoice->load(['voucherType', 'entries.ledgerAccount', 'createdBy', 'postedBy', 'items']);
 
-        // Get inventory items from meta data
-        $inventoryItems = collect();
-        if ($invoice->meta_data) {
-            $metaData = json_decode($invoice->meta_data, true);
-            if (isset($metaData['inventory_items'])) {
-                $inventoryItems = collect($metaData['inventory_items']);
-            }
-        }
+        // Get bank accounts for receipt voucher posting
+        $bankAccounts = LedgerAccount::where('tenant_id', $tenant->id)
+            ->where(function($q) {
+                $q->where('code', 'LIKE', '%CASH%')
+                  ->orWhere('code', 'LIKE', '%BANK%')
+                  ->orWhere('name', 'LIKE', '%Cash%')
+                  ->orWhere('name', 'LIKE', '%Bank%');
+            })
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
-        return view('tenant.accounting.invoices.show', compact('tenant', 'invoice', 'inventoryItems'));
+        Log::info('Found bank accounts for tenant', [
+            'tenant_id' => $tenant->id,
+            'bank_accounts_count' => $bankAccounts->count(),
+            'bank_accounts' => $bankAccounts->pluck('name', 'id')->toArray()
+        ]);
+
+        return view('tenant.accounting.invoices.show', compact('tenant', 'invoice', 'bankAccounts'));
     }
 
     public function edit(Tenant $tenant, Voucher $invoice)
@@ -566,6 +581,201 @@ class InvoiceController extends Controller
                 $product->current_stock_value = $product->current_stock * $product->purchase_rate;
                 $product->save();
             }
+        }
+    }
+
+    public function pdf(Tenant $tenant, Voucher $invoice)
+    {
+        // Ensure the invoice belongs to the tenant
+        if ($invoice->tenant_id !== $tenant->id) {
+            abort(404);
+        }
+
+        $invoice->load(['voucherType', 'entries.ledgerAccount', 'createdBy', 'postedBy', 'items']);
+
+        // Get customer info if available
+        $customer = $invoice->entries->where('debit_amount', '>', 0)->first()?->ledgerAccount;
+
+        $pdf = Pdf::loadView('tenant.accounting.invoices.pdf', compact('tenant', 'invoice', 'customer'));
+
+        return $pdf->download('invoice-' . $invoice->voucherType->prefix . $invoice->voucher_number . '.pdf');
+    }
+
+    public function email(Request $request, Tenant $tenant, Voucher $invoice)
+    {
+        // Ensure the invoice belongs to the tenant
+        if ($invoice->tenant_id !== $tenant->id) {
+            abort(404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'to' => 'required|email',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $invoice->load(['voucherType', 'entries.ledgerAccount', 'createdBy', 'postedBy', 'items']);
+            $customer = $invoice->entries->where('debit_amount', '>', 0)->first()?->ledgerAccount;
+
+            // Generate PDF
+            $pdf = Pdf::loadView('tenant.accounting.invoices.pdf', compact('tenant', 'invoice', 'customer'));
+
+            // Send email with PDF attachment
+            Mail::send('emails.invoice', [
+                'invoice' => $invoice,
+                'tenant' => $tenant,
+                'message' => $request->message,
+            ], function ($mail) use ($request, $invoice, $pdf) {
+                $mail->to($request->to)
+                     ->subject($request->subject)
+                     ->attachData($pdf->output(), 'invoice-' . $invoice->voucher_number . '.pdf', [
+                         'mime' => 'application/pdf',
+                     ]);
+            });
+
+            return response()->json(['message' => 'Invoice sent successfully']);
+
+        } catch (\Exception $e) {
+            \Log::error('Error sending invoice email: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to send email'], 500);
+        }
+    }
+
+    public function recordPayment(Request $request, Tenant $tenant, Voucher $invoice)
+    {
+        Log::info('recordPayment method called', [
+            'tenant_id' => $tenant->id,
+            'invoice_id' => $invoice->id,
+            'request_all' => $request->all()
+        ]);
+
+        // Ensure the invoice belongs to the tenant
+        if ($invoice->tenant_id !== $tenant->id) {
+            Log::error('Invoice does not belong to tenant');
+            abort(404);
+        }
+
+        if ($invoice->status !== 'posted') {
+            Log::error('Invoice is not posted', ['status' => $invoice->status]);
+            return response()->json(['message' => 'Only posted invoices can receive payments'], 422);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'date' => 'required|date',
+            'amount' => 'required|numeric|min:0.01|max:' . $invoice->total_amount,
+            'bank_account_id' => 'required|exists:ledger_accounts,id',
+            'reference' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            Log::error('Validation failed', ['errors' => $validator->errors()]);
+            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
+
+        Log::info('Validation passed');
+
+        try {
+            DB::beginTransaction();
+
+            Log::info('Recording payment for invoice', [
+                'invoice_id' => $invoice->id,
+                'tenant_id' => $tenant->id,
+                'request_data' => $request->all()
+            ]);
+
+            // Get receipt voucher type
+            $receiptVoucherType = VoucherType::where('tenant_id', $tenant->id)
+                ->where('code', 'RV')
+                ->first();
+
+            if (!$receiptVoucherType) {
+                Log::error('Receipt voucher type not found', ['tenant_id' => $tenant->id]);
+                throw new \Exception('Receipt voucher type not found. Please create it first.');
+            }
+
+            Log::info('Found receipt voucher type', ['voucher_type_id' => $receiptVoucherType->id]);
+
+            // Get bank account
+            $bankAccount = LedgerAccount::findOrFail($request->bank_account_id);
+            Log::info('Found bank account', ['bank_account' => $bankAccount->toArray()]);
+
+            // Get customer account from the original invoice
+            $customerAccount = $invoice->entries->where('debit_amount', '>', 0)->first()?->ledgerAccount;
+
+            if (!$customerAccount) {
+                throw new \Exception('Customer account not found in invoice entries');
+            }
+
+            // Generate voucher number for receipt
+            $lastReceipt = Voucher::where('tenant_id', $tenant->id)
+                ->where('voucher_type_id', $receiptVoucherType->id)
+                ->latest('id')
+                ->first();
+
+            $nextNumber = $lastReceipt ? $lastReceipt->voucher_number + 1 : 1;
+
+            // Create receipt voucher
+            $voucherData = [
+                'tenant_id' => $tenant->id,
+                'voucher_type_id' => $receiptVoucherType->id,
+                'voucher_number' => $nextNumber,
+                'voucher_date' => $request->date,
+                'reference_number' => $request->reference,
+                'narration' => $request->notes ?? 'Payment received for Invoice ' . $invoice->voucherType->prefix . $invoice->voucher_number,
+                'total_amount' => $request->amount,
+                'status' => 'posted',
+                'created_by' => auth()->id(),
+                'posted_at' => now(),
+                'posted_by' => auth()->id(),
+            ];
+
+            Log::info('Creating receipt voucher with data', $voucherData);
+
+            $receiptVoucher = Voucher::create($voucherData);
+
+            Log::info('Receipt voucher created', ['voucher_id' => $receiptVoucher->id]);
+
+            // Create accounting entries for receipt
+            // Debit: Bank/Cash Account
+            $debitEntry = [
+                'voucher_id' => $receiptVoucher->id,
+                'ledger_account_id' => $bankAccount->id,
+                'debit_amount' => $request->amount,
+                'credit_amount' => 0,
+                'particulars' => 'Payment received from ' . $customerAccount->name,
+            ];
+
+            Log::info('Creating debit entry', $debitEntry);
+            VoucherEntry::create($debitEntry);
+
+            // Credit: Customer Account (reducing their outstanding balance)
+            $creditEntry = [
+                'voucher_id' => $receiptVoucher->id,
+                'ledger_account_id' => $customerAccount->id,
+                'debit_amount' => 0,
+                'credit_amount' => $request->amount,
+                'particulars' => 'Payment received against Invoice ' . $invoice->voucherType->prefix . $invoice->voucher_number,
+            ];
+
+            Log::info('Creating credit entry', $creditEntry);
+            VoucherEntry::create($creditEntry);
+
+            DB::commit();
+
+            Log::info('Payment recording completed successfully');
+
+            return response()->json(['message' => 'Payment recorded successfully']);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error recording payment: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to record payment: ' . $e->getMessage()], 500);
         }
     }
 }
