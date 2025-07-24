@@ -538,4 +538,36 @@ class VoucherController extends Controller
         // For now, returning a view that can be printed
         return view('tenant.accounting.vouchers.pdf', compact('tenant', 'voucher'));
     }
+
+    /**
+     * Generate PDF for voucher (route method).
+     */
+    public function pdf(Tenant $tenant, Voucher $voucher)
+    {
+        // Ensure the voucher belongs to the tenant
+        if ($voucher->tenant_id !== $tenant->id) {
+            abort(404);
+        }
+
+        $voucher->load(['voucherType', 'entries.ledgerAccount.accountGroup', 'createdBy', 'postedBy']);
+
+        $pdf = Pdf::loadView('tenant.accounting.vouchers.pdf', compact('tenant', 'voucher'));
+        
+        return $pdf->stream($voucher->voucherType->name . '_' . $voucher->voucher_number . '.pdf');
+    }
+
+    /**
+     * Print voucher.
+     */
+    public function print(Tenant $tenant, Voucher $voucher)
+    {
+        // Ensure the voucher belongs to the tenant
+        if ($voucher->tenant_id !== $tenant->id) {
+            abort(404);
+        }
+
+        $voucher->load(['voucherType', 'entries.ledgerAccount.accountGroup', 'createdBy', 'postedBy']);
+
+        return view('tenant.accounting.vouchers.print', compact('tenant', 'voucher'));
+    }
 }

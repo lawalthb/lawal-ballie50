@@ -277,10 +277,11 @@
                                             View Receipt
                                         </a>
                                         @if($payment->status === 'posted')
-                                        <button onclick="printVoucher({{ $payment->id }})"
-                                                class="text-gray-600 hover:text-gray-800 text-sm font-medium">
+                                        <a href="{{ route('tenant.accounting.vouchers.pdf', ['tenant' => $tenant->slug, 'voucher' => $payment->id]) }}"
+                                        target="_blank"
+                                        class="text-gray-600 hover:text-gray-800 text-sm font-medium">
                                             Print
-                                        </button>
+                                        </a>
                                         @endif
                                     </div>
                                 </div>
@@ -599,12 +600,6 @@ function invoiceShow() {
             window.open('{{ route("tenant.accounting.invoices.pdf", ["tenant" => $tenant->slug, "invoice" => $invoice->id]) }}', '_blank');
         }
     };
-}
-
-function printVoucher(voucherId) {
-    // Create a print route for vouchers/receipts
-    const printUrl = `/{{ $tenant->slug }}/vouchers/${voucherId}/pdf`;
-    window.open(printUrl, '_blank');
 }
 </script>
 @endpush
