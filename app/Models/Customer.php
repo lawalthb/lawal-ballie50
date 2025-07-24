@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\LedgerAccount;
 use App\Models\AccountGroup;
+use App\Models\Voucher;
+use App\Models\VoucherEntry;
 
 class Customer extends Model
 {
@@ -86,6 +88,44 @@ class Customer extends Model
     public function ledgerAccount()
     {
         return $this->belongsTo(LedgerAccount::class);
+    }
+
+    /**
+     * Get vouchers (invoices) for this customer through their ledger account.
+     */
+    public function vouchers()
+    {
+        return $this->hasManyThrough(
+            Voucher::class,
+            VoucherEntry::class,
+            'ledger_account_id', // Foreign key on voucher_entries table
+            'id', // Foreign key on vouchers table
+            'ledger_account_id', // Local key on customers table
+            'voucher_id' // Local key on voucher_entries table
+        )->distinct();
+    }
+
+    /**
+     * Get sales vouchers (invoices) for this customer.
+     */
+    public function invoices()
+    {
+        return $this->vouchers()
+            ->whereHas('voucherType', function($query) {
+                $query->where('code', 'SALES')
+                      ->orWhere('affects_inventory', true);
+            });
+    }
+
+    /**
+     * Get payment vouchers for this customer.
+     */
+    public function payments()
+    {
+        return $this->vouchers()
+            ->whereHas('voucherType', function($query) {
+                $query->where('code', 'RV'); // Receipt Voucher
+            });
     }
 
  

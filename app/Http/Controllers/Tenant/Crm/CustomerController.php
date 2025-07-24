@@ -13,7 +13,7 @@ class CustomerController extends Controller
 {
     public function index(Request $request, Tenant $tenant)
     {
-        $query = Customer::with(['invoices', 'payments'])
+        $query = Customer::with(['invoices', 'payments', 'ledgerAccount'])
             ->where('tenant_id', $tenant->id);
 
         // Search functionality
