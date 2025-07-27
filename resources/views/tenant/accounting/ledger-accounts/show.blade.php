@@ -122,9 +122,6 @@
                             <div class="text-sm text-gray-500">Opening Balance</div>
                         </div>
                         <div class="text-center">
-                            @php
-                                $currentBalance = $ledgerAccount->opening_balance + ($totalDebits ?? 0) - ($totalCredits ?? 0);
-                            @endphp
                             <div class="text-2xl font-bold {{ $currentBalance >= 0 ? 'text-green-600' : 'text-red-600' }}">
                                 ₦{{ number_format(abs($currentBalance), 2) }}
                                 <span class="text-sm">{{ $currentBalance >= 0 ? 'Dr' : 'Cr' }}</span>
@@ -233,7 +230,7 @@
                                                 </a>
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-900">
-                                                {{ Str::limit($transaction->description, 50) }}
+                                                {{ Str::limit($transaction->particulars ?? 'Transaction', 50) }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
                                                 @if($transaction->debit_amount > 0)

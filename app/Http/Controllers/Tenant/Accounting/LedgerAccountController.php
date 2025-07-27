@@ -162,7 +162,7 @@ class LedgerAccountController extends Controller
 
         try {
             $ledgerAccount = null;
-            
+
             DB::transaction(function () use ($request, $tenant, &$ledgerAccount) {
                 $ledgerAccount = LedgerAccount::create([
                     'tenant_id' => $tenant->id,
@@ -189,7 +189,7 @@ class LedgerAccountController extends Controller
             if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
                 // Load the account with its relationships for the response
                 $ledgerAccount->load('accountGroup');
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Ledger account created successfully.',
@@ -218,7 +218,7 @@ class LedgerAccountController extends Controller
                     'message' => 'Failed to create ledger account: ' . $e->getMessage()
                 ], 422);
             }
-            
+
             return back()
                 ->withInput()
                 ->with('error', 'Failed to create ledger account: ' . $e->getMessage());
@@ -230,26 +230,43 @@ public function show(Request $request, Tenant $tenant, LedgerAccount $ledgerAcco
     $ledgerAccount->load(['accountGroup', 'parent', 'children']);
 
     // Get recent transactions for this account
-    $recentTransactions = collect(); // Empty collection for now
-
-    // If you have voucher entries relationship, uncomment this:
-    // $recentTransactions = $ledgerAccount->voucherEntries()
-    //     ->with(['voucher'])
-    //     ->latest()
-    //     ->take(10)
-    //     ->get();
+    $recentTransactions = $ledgerAccount->voucherEntries()
+        ->with(['voucher'])
+        ->whereHas('voucher', function ($query) {
+            $query->where('status', 'posted');
+        })
+        ->orderBy('created_at', 'desc')
+        ->take(10)
+        ->get();
 
     // Get account balance totals
-    $totalDebits = 0;
-    $totalCredits = 0;
-    $transactionCount = 0;
-    $lastTransaction = null;
+    $totalDebits = $ledgerAccount->voucherEntries()
+        ->whereHas('voucher', function ($query) {
+            $query->where('status', 'posted');
+        })
+        ->sum('debit_amount');
 
-    // If you have voucher entries relationship, uncomment these:
-    // $totalDebits = $ledgerAccount->voucherEntries()->sum('debit_amount');
-    // $totalCredits = $ledgerAccount->voucherEntries()->sum('credit_amount');
-    // $transactionCount = $ledgerAccount->voucherEntries()->count();
-    // $lastTransaction = $ledgerAccount->voucherEntries()->latest()->first();
+    $totalCredits = $ledgerAccount->voucherEntries()
+        ->whereHas('voucher', function ($query) {
+            $query->where('status', 'posted');
+        })
+        ->sum('credit_amount');
+
+    $transactionCount = $ledgerAccount->voucherEntries()
+        ->whereHas('voucher', function ($query) {
+            $query->where('status', 'posted');
+        })
+        ->count();
+
+    $lastTransaction = $ledgerAccount->voucherEntries()
+        ->whereHas('voucher', function ($query) {
+            $query->where('status', 'posted');
+        })
+        ->latest()
+        ->first();
+
+    // Get current balance using the model method
+    $currentBalance = $ledgerAccount->getCurrentBalance();
 
     return view('tenant.accounting.ledger-accounts.show', compact(
         'tenant',
@@ -258,7 +275,8 @@ public function show(Request $request, Tenant $tenant, LedgerAccount $ledgerAcco
         'totalDebits',
         'totalCredits',
         'transactionCount',
-        'lastTransaction'
+        'lastTransaction',
+        'currentBalance'
     ));
 }
 
