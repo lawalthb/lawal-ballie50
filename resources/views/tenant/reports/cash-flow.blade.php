@@ -108,22 +108,24 @@
 
     <!-- Enhanced Controls -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-            <div class="flex items-center space-x-4">
-                <h3 class="text-lg font-medium text-gray-900">Report Controls</h3>
-                <div class="flex items-center space-x-2">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        {{ \Carbon\Carbon::parse($fromDate)->diffInDays(\Carbon\Carbon::parse($toDate)) + 1 }} days
-                    </span>
+        <div class="space-y-4">
+            <!-- First Row: Header and Date Range Controls -->
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <div class="flex items-center space-x-4">
+                    <h3 class="text-lg font-medium text-gray-900">Report Controls</h3>
+                    <div class="flex items-center space-x-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            {{ \Carbon\Carbon::parse($fromDate)->diffInDays(\Carbon\Carbon::parse($toDate)) + 1 }} days
+                        </span>
+                    </div>
                 </div>
-            </div>
 
-            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+                <!-- Date Range Form -->
                 <form method="GET" class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-                    <div class="flex items-center space-x-3">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
                         <div>
                             <label for="from_date" class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
                             <input type="date"
@@ -151,26 +153,29 @@
                         </div>
                     </div>
                 </form>
+            </div>
 
-                <div class="flex items-center space-x-2">
-                    <!-- Quick Date Presets -->
-                    <div class="flex items-center space-x-1">
-                        <button onclick="setDateRange('this_month')"
-                                class="px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md">
-                            This Month
-                        </button>
-                        <button onclick="setDateRange('last_month')"
-                                class="px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md">
-                            Last Month
-                        </button>
-                        <button onclick="setDateRange('this_quarter')"
-                                class="px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md">
-                            This Quarter
-                        </button>
-                    </div>
+            <!-- Second Row: Quick Date Presets and Action Buttons -->
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <!-- Quick Date Presets -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-sm font-medium text-gray-600 mr-2">Quick Filters:</span>
+                    <button onclick="setDateRange('this_month')"
+                            class="px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md border border-gray-200">
+                        This Month
+                    </button>
+                    <button onclick="setDateRange('last_month')"
+                            class="px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md border border-gray-200">
+                        Last Month
+                    </button>
+                    <button onclick="setDateRange('this_quarter')"
+                            class="px-3 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md border border-gray-200">
+                        This Quarter
+                    </button>
+                </div>
 
-                    <div class="h-4 border-l border-gray-300"></div>
-
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap items-center gap-2">
                     <button onclick="window.print()"
                             class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -462,7 +467,7 @@
                             </div>
                         @endforeach
 
-                        <div class="border-t-2 border-gray-300 pt-4 mt-6">
+                        <div class="border-t-2 border-gray-300 pt-4 mt-6 mb-5">
                             <div class="flex justify-between items-center py-3 px-4 rounded-lg {{ $financingTotal >= 0 ? 'bg-green-50' : 'bg-red-50' }}">
                                 <span class="text-lg font-semibold text-gray-900">Net Cash Flow from Financing Activities</span>
                                 <span class="text-2xl font-mono font-bold {{ $financingTotal >= 0 ? 'text-green-600' : 'text-red-600' }}">
