@@ -31,11 +31,11 @@
         <!-- Trust indicators -->
         <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 opacity-70">
             <div class="text-center">
-                <div class="text-2xl font-bold text-brand-gold counter" data-target="8500">0</div>
+                <div class="text-2xl font-bold text-brand-gold counter" data-target="8500">855</div>
                 <div class="text-gray-300 text-sm">Happy Customers</div>
             </div>
             <div class="text-center">
-                <div class="text-2xl font-bold text-brand-gold counter" data-target="99.9">0</div>
+                <div class="text-2xl font-bold text-brand-gold counter" data-target="99.9">99.9</div>
                 <div class="text-gray-300 text-sm">% Uptime</div>
             </div>
             <div class="text-center">
@@ -43,7 +43,7 @@
                 <div class="text-gray-300 text-sm">Support</div>
             </div>
             <div class="text-center">
-                <div class="text-2xl font-bold text-brand-gold counter" data-target="5">0</div>
+                <div class="text-2xl font-bold text-brand-gold counter" data-target="5">15</div>
                 <div class="text-gray-300 text-sm">Years Experience</div>
             </div>
         </div>
