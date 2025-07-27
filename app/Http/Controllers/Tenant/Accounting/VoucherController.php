@@ -100,9 +100,12 @@ class VoucherController extends Controller
 
 
         $selectedType = null;
-        if ($type) {
+        // Check route parameter first, then query parameter
+        $typeCode = $type ?? $request->get('type');
+
+        if ($typeCode) {
             $selectedType = VoucherType::where('tenant_id', $tenant->id)
-                ->where('code', strtoupper($type))
+                ->where('code', strtoupper($typeCode))
                 ->first();
 
             if (!$selectedType) {

@@ -40,7 +40,13 @@
         <!-- Voucher Header -->
         <div class="bg-white shadow-sm rounded-lg border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">Voucher Information</h3>
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-medium text-gray-900">Voucher Information</h3>
+                    <span x-show="selectedVoucherTypeName"
+                          x-text="selectedVoucherTypeName"
+                          class="font-bold text-primary-600 bg-primary-50 px-3 py-1 rounded-full text-sm">
+                    </span>
+                </div>
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -146,7 +152,7 @@
                         </svg>
                     </button>
                 </div>
-                
+
                 <form id="addLedgerForm" onsubmit="addNewLedgerAccount(event)">
                     <div class="space-y-4">
                         <!-- Account Name -->
@@ -154,9 +160,9 @@
                             <label for="ledger_name" class="block text-sm font-medium text-gray-700">
                                 Account Name <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" 
-                                   id="ledger_name" 
-                                   name="name" 
+                            <input type="text"
+                                   id="ledger_name"
+                                   name="name"
                                    required
                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
                         </div>
@@ -166,9 +172,9 @@
                             <label for="ledger_code" class="block text-sm font-medium text-gray-700">
                                 Account Code <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" 
-                                   id="ledger_code" 
-                                   name="code" 
+                            <input type="text"
+                                   id="ledger_code"
+                                   name="code"
                                    required
                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
                         </div>
@@ -178,8 +184,8 @@
                             <label for="ledger_account_group_id" class="block text-sm font-medium text-gray-700">
                                 Account Group <span class="text-red-500">*</span>
                             </label>
-                            <select id="ledger_account_group_id" 
-                                    name="account_group_id" 
+                            <select id="ledger_account_group_id"
+                                    name="account_group_id"
                                     required
                                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
                                 <option value="">Select Account Group</option>
@@ -194,8 +200,8 @@
                             <label for="ledger_account_type" class="block text-sm font-medium text-gray-700">
                                 Account Type <span class="text-red-500">*</span>
                             </label>
-                            <select id="ledger_account_type" 
-                                    name="account_type" 
+                            <select id="ledger_account_type"
+                                    name="account_type"
                                     required
                                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
                                 <option value="">Select Account Type</option>
@@ -212,9 +218,9 @@
                             <label for="ledger_opening_balance" class="block text-sm font-medium text-gray-700">
                                 Opening Balance
                             </label>
-                            <input type="number" 
-                                   id="ledger_opening_balance" 
-                                   name="opening_balance" 
+                            <input type="number"
+                                   id="ledger_opening_balance"
+                                   name="opening_balance"
                                    step="0.01"
                                    min="0"
                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
@@ -225,20 +231,20 @@
                             <label for="ledger_description" class="block text-sm font-medium text-gray-700">
                                 Description
                             </label>
-                            <textarea id="ledger_description" 
-                                      name="description" 
+                            <textarea id="ledger_description"
+                                      name="description"
                                       rows="2"
                                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"></textarea>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-end space-x-3 mt-6">
-                        <button type="button" 
+                        <button type="button"
                                 onclick="closeAddLedgerModal()"
                                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                             Cancel
                         </button>
-                        <button type="submit" 
+                        <button type="submit"
                                 class="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                             <span id="addLedgerSubmitText">Add Account</span>
                             <svg id="addLedgerSpinner" class="hidden animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -259,20 +265,34 @@ function voucherForm() {
     return {
         voucherTypeId: '{{ old('voucher_type_id', $selectedType?->id ?? '') }}',
         voucherNumberPreview: 'Auto-generated',
+        selectedVoucherTypeName: '{{ $selectedType?->name ?? '' }}',
         voucherTypes: @json($voucherTypes->keyBy('id')),
 
         init() {
-            // Initialize with old input or duplicate data if available
+            // Initialize with old input or selected type from URL parameter
+            if (this.voucherTypeId) {
+                // Trigger the select element to update visually
+                this.$nextTick(() => {
+                    const selectElement = document.getElementById('voucher_type_id');
+                    if (selectElement) {
+                        selectElement.value = this.voucherTypeId;
+                        // Trigger change event to update preview
+                        selectElement.dispatchEvent(new Event('change'));
+                    }
+                });
+            }
             this.updateVoucherType();
-            console.log('✅ Voucher form initialized');
+            console.log('✅ Voucher form initialized with type:', this.voucherTypeId);
         },
 
         updateVoucherType() {
             if (this.voucherTypeId && this.voucherTypes[this.voucherTypeId]) {
                 const voucherType = this.voucherTypes[this.voucherTypeId];
                 this.voucherNumberPreview = voucherType.prefix + 'XXXX';
+                this.selectedVoucherTypeName = voucherType.name;
             } else {
                 this.voucherNumberPreview = 'Auto-generated';
+                this.selectedVoucherTypeName = '';
             }
         }
     }
