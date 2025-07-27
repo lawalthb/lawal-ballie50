@@ -313,15 +313,7 @@
 function voucherForm() {
     return {
         voucherTypeId: '{{ old('voucher_type_id', $voucher->voucher_type_id) }}',
-        entries: @json(old('entries', $voucher->entries->map(function($entry) {
-            return [
-                'id' => $entry->id,
-                'ledger_account_id' => $entry->ledger_account_id,
-                'particulars' => $entry->particulars,
-                'debit_amount' => $entry->debit_amount > 0 ? number_format($entry->debit_amount, 2, '.', '') : '',
-                'credit_amount' => $entry->credit_amount > 0 ? number_format($entry->credit_amount, 2, '.', '') : '',
-            ];
-        })->toArray())),
+        entries: @json(old('entries', $entriesData ?? [])),
         totalDebits: 0,
         totalCredits: 0,
         voucherTypes: @json($voucherTypes->keyBy('id')),
@@ -381,7 +373,7 @@ function voucherForm() {
         updateEntryAccount(index) {
             // Auto-fill particulars based on account selection if empty
             if (!this.entries[index].particulars && this.entries[index].ledger_account_id) {
-                const accountSelect = document.querySelector(`select[name="entries[${index}][ledger_account_id]"]`);
+                const accountSelect = document.querySelector('select[name="entries[' + index + '][ledger_account_id]"]');
                 const selectedOption = accountSelect.options[accountSelect.selectedIndex];
                 if (selectedOption && selectedOption.text) {
                     this.entries[index].particulars = 'Being ' + selectedOption.text.split(' (')[0];

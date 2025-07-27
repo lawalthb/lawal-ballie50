@@ -40,7 +40,7 @@ class VoucherController extends Controller
         $ledgerAccounts = LedgerAccount::where('tenant_id', tenant()->id)
             ->with('accountGroup')
             ->active()
-            ->orderBy('name')
+            ->orderBy('account_group_id')
             ->get();
 
         return view('tenant.vouchers.create', compact('voucherTypes', 'selectedType', 'ledgerAccounts'));

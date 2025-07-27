@@ -243,13 +243,26 @@ class VoucherController extends Controller
             ->orderBy('name')
             ->get();
 
+        // Load entries and ensure they are properly formatted
         $voucher->load('entries');
+
+        // Prepare entries data safely
+        $entriesData = $voucher->entries->map(function($entry) {
+            return [
+                'id' => $entry->id,
+                'ledger_account_id' => $entry->ledger_account_id,
+                'particulars' => $entry->particulars ?? '',
+                'debit_amount' => $entry->debit_amount > 0 ? number_format($entry->debit_amount, 2, '.', '') : '',
+                'credit_amount' => $entry->credit_amount > 0 ? number_format($entry->credit_amount, 2, '.', '') : '',
+            ];
+        })->toArray();
 
         return view('tenant.accounting.vouchers.edit', compact(
             'tenant',
             'voucher',
             'voucherTypes',
-            'ledgerAccounts'
+            'ledgerAccounts',
+            'entriesData'
         ));
     }
 
@@ -282,7 +295,7 @@ class VoucherController extends Controller
             return back()->withErrors(['entries' => 'Voucher must have valid entries with amounts.'])->withInput();
         }
 
-        DB::transaction(function () use ($request, $voucher) {
+        DB::transaction(function () use ($request, $voucher, $totalDebits) {
             // Update voucher
             $voucher->update([
                 'voucher_type_id' => $request->voucher_type_id,

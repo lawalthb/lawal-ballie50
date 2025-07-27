@@ -226,10 +226,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="flex-1">
                             <div class="flex items-center space-x-2">
                                 <span class="font-medium text-gray-900">${account.name}</span>
-                                <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">${account.code}</span>
+
                             </div>
                             <div class="text-sm text-gray-500 mt-1">
-                                ${account.account_type} • ${account.account_group}
+                             ${account.account_group}
                             </div>
                         </div>
                         <div class="text-right">
