@@ -366,25 +366,9 @@ class VoucherController extends Controller
                 'posted_by' => Auth::id(),
             ]);
 
-            // Create ledger entries for each voucher entry
+            // Update account balances for each voucher entry
             foreach ($voucher->entries as $entry) {
-                \App\Models\LedgerEntry::create([
-                    'tenant_id' => $voucher->tenant_id,
-                    'ledger_account_id' => $entry->ledger_account_id,
-                    'voucher_id' => $voucher->id,
-                    'voucher_entry_id' => $entry->id,
-                    'transaction_date' => $voucher->voucher_date,
-                    'particulars' => $entry->particulars ?: $voucher->narration,
-                    'debit_amount' => $entry->debit_amount,
-                    'credit_amount' => $entry->credit_amount,
-                    'reference_number' => $voucher->reference_number,
-                ]);
-            }
-
-            // Update account balances
-            foreach ($voucher->entries as $entry) {
-                $account = $entry->ledgerAccount;
-                $account->updateBalance();
+                $entry->updateLedgerAccountBalance();
             }
         });
 
@@ -401,20 +385,16 @@ class VoucherController extends Controller
         }
 
         DB::transaction(function () use ($voucher) {
-            // Delete related ledger entries
-            \App\Models\LedgerEntry::where('voucher_id', $voucher->id)->delete();
-
-            // Update voucher status
+            // Update voucher status first
             $voucher->update([
                 'status' => 'draft',
                 'posted_at' => null,
                 'posted_by' => null,
             ]);
 
-            // Update account balances
+            // Update account balances (the VoucherEntry model events will handle this)
             foreach ($voucher->entries as $entry) {
-                $account = $entry->ledgerAccount;
-                $account->updateBalance();
+                $entry->updateLedgerAccountBalance();
             }
         });
 
@@ -552,7 +532,7 @@ class VoucherController extends Controller
         $voucher->load(['voucherType', 'entries.ledgerAccount.accountGroup', 'createdBy', 'postedBy']);
 
         $pdf = Pdf::loadView('tenant.accounting.vouchers.pdf', compact('tenant', 'voucher'));
-        
+
         return $pdf->stream($voucher->voucherType->name . '_' . $voucher->voucher_number . '.pdf');
     }
 
