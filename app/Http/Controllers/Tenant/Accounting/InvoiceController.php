@@ -553,40 +553,128 @@ class InvoiceController extends Controller
         return view('tenant.accounting.invoices.print', compact('tenant', 'invoice', 'inventoryItems', 'customer'));
     }
 
-    private function createAccountingEntries(Voucher $voucher, array $inventoryItems, Tenant $tenant, $customerLedger_id)
-    {
-        // Get default accounts
-        $salesAccount = LedgerAccount::where('tenant_id', $tenant->id)
-            ->where('name', 'LIKE', '%Sales%')
-            ->first();
+private function createAccountingEntries(Voucher $voucher, array $inventoryItems, Tenant $tenant, $customerLedger_id)
+{
+    // Get default accounts
+    $salesAccount = LedgerAccount::where('tenant_id', $tenant->id)
+        ->where('name', 'LIKE', '%Sales%')
+        ->first();
 
-        if (!$salesAccount || !$customerLedger_id) {
-            throw new \Exception('Required ledger accounts (Sales, and customer ledger id) not found. Please create them first.');
+    if (!$salesAccount || !$customerLedger_id) {
+        throw new \Exception('Required ledger accounts (Sales, and customer ledger id) not found. Please create them first.');
+    }
+
+    // Get the customer account using the ID
+    $customerAccount = LedgerAccount::find($customerLedger_id);
+    if (!$customerAccount) {
+        throw new \Exception('Customer ledger account not found.');
+    }
+
+    $totalAmount = collect($inventoryItems)->sum('amount');
+
+    // Debit: Customer Account (Accounts Receivable)
+    VoucherEntry::create([
+        'voucher_id' => $voucher->id,
+        'ledger_account_id' => $customerLedger_id,
+        'debit_amount' => $totalAmount,
+        'credit_amount' => 0,
+        'particulars' => 'Sales invoice - ' . $voucher->getDisplayNumber(),
+    ]);
+
+    // Credit: Sales Account
+    VoucherEntry::create([
+        'voucher_id' => $voucher->id,
+        'ledger_account_id' => $salesAccount->id,
+        'debit_amount' => 0,
+        'credit_amount' => $totalAmount,
+        'particulars' => 'Sales invoice - ' . $voucher->getDisplayNumber(),
+    ]);
+
+    // Explicitly update ledger account balances and last transaction date
+    try {
+        Log::info('Before updating customer balance', [
+            'customer_account_id' => $customerAccount->id,
+            'current_balance_before' => $customerAccount->current_balance
+        ]);
+
+        $customerBalance = $customerAccount->updateCurrentBalance();
+
+        Log::info('After updating customer balance', [
+            'customer_account_id' => $customerAccount->id,
+            'current_balance_after' => $customerAccount->fresh()->current_balance,
+            'calculated_balance' => $customerBalance
+        ]);
+
+        Log::info('Before updating sales balance', [
+            'sales_account_id' => $salesAccount->id,
+            'current_balance_before' => $salesAccount->current_balance
+        ]);
+
+        $salesBalance = $salesAccount->updateCurrentBalance();
+
+        Log::info('After updating sales balance', [
+            'sales_account_id' => $salesAccount->id,
+            'current_balance_after' => $salesAccount->fresh()->current_balance,
+            'calculated_balance' => $salesBalance
+        ]);
+
+        // Manual backup calculation if the automatic update didn't work
+        if ($customerAccount->fresh()->current_balance == $customerAccount->opening_balance) {
+            // Calculate manually for customer account (asset type)
+            $totalDebits = $customerAccount->voucherEntries()->sum('debit_amount');
+            $totalCredits = $customerAccount->voucherEntries()->sum('credit_amount');
+            $manualBalance = $customerAccount->opening_balance + $totalDebits - $totalCredits;
+
+            $customerAccount->update(['current_balance' => $manualBalance]);
+
+            Log::info('Manual customer balance update', [
+                'manual_balance' => $manualBalance,
+                'total_debits' => $totalDebits,
+                'total_credits' => $totalCredits
+            ]);
         }
 
-        $totalAmount = collect($inventoryItems)->sum('amount');
+        if ($salesAccount->fresh()->current_balance == $salesAccount->opening_balance) {
+            // Calculate manually for sales account (income type)
+            $totalDebits = $salesAccount->voucherEntries()->sum('debit_amount');
+            $totalCredits = $salesAccount->voucherEntries()->sum('credit_amount');
+            $manualBalance = $salesAccount->opening_balance + $totalCredits - $totalDebits;
 
-        // Debit: Cash/Accounts Receivable
-        VoucherEntry::create([
-            'voucher_id' => $voucher->id,
-            'ledger_account_id' => $customerLedger_id,
-            'debit_amount' => $totalAmount,
-            'credit_amount' => 0,
-            'particulars' => 'Sales invoice - ' . $voucher->getDisplayNumber(),
+            $salesAccount->update(['current_balance' => $manualBalance]);
+
+            Log::info('Manual sales balance update', [
+                'manual_balance' => $manualBalance,
+                'total_debits' => $totalDebits,
+                'total_credits' => $totalCredits
+            ]);
+        }
+
+        Log::info('After updating sales balance', [
+            'sales_account_id' => $salesAccount->id,
+            'current_balance_after' => $salesAccount->fresh()->current_balance,
+            'calculated_balance' => $salesBalance
         ]);
 
-        // Credit: Sales
-        VoucherEntry::create([
-            'voucher_id' => $voucher->id,
-            'ledger_account_id' => $salesAccount->id,
-            'debit_amount' => 0,
-            'credit_amount' => $totalAmount,
-            'particulars' => 'Sales invoice - ' . $voucher->getDisplayNumber(),
-        ]);
+        // Also update customer outstanding balance if linked
+        $customer = Customer::where('ledger_account_id', $customerAccount->id)->first();
+        if ($customer) {
+            $outstandingBalance = max(0, $customerBalance);
+            $customer->update(['outstanding_balance' => $outstandingBalance]);
 
-        // If you want to track Cost of Goods Sold (COGS), add those entries here
-        // This would require tracking purchase costs of products
+            Log::info('Updated customer outstanding balance', [
+                'customer_id' => $customer->id,
+                'outstanding_balance' => $outstandingBalance
+            ]);
+        }
+
+    } catch (\Exception $e) {
+        Log::error('Error updating account balances: ' . $e->getMessage());
+        throw $e;
     }
+
+    // If you want to track Cost of Goods Sold (COGS), add those entries here
+    // This would require tracking purchase costs of products
+}
 
     private function updateProductStock(array $inventoryItems, string $operation)
     {
@@ -665,7 +753,7 @@ class InvoiceController extends Controller
             return response()->json(['message' => 'Invoice sent successfully']);
 
         } catch (\Exception $e) {
-            \Log::error('Error sending invoice email: ' . $e->getMessage());
+            Log::error('Error sending invoice email: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to send email'], 500);
         }
     }
@@ -790,9 +878,103 @@ class InvoiceController extends Controller
             Log::info('Creating credit entry', $creditEntry);
             VoucherEntry::create($creditEntry);
 
-            DB::commit();
+            // Force refresh the models to get latest data
+            $bankAccount = $bankAccount->fresh();
+            $customerAccount = $customerAccount->fresh();
 
-            Log::info('Payment recording completed successfully');
+            // Explicitly update ledger account balances
+            try {
+                Log::info('Before updating bank account balance', [
+                    'bank_account_id' => $bankAccount->id,
+                    'current_balance_before' => $bankAccount->current_balance
+                ]);
+
+                // Manual calculation for bank account (asset type)
+                $bankTotalDebits = $bankAccount->voucherEntries()
+                    ->whereHas('voucher', function($q) {
+                        $q->where('status', 'posted');
+                    })->sum('debit_amount');
+
+                $bankTotalCredits = $bankAccount->voucherEntries()
+                    ->whereHas('voucher', function($q) {
+                        $q->where('status', 'posted');
+                    })->sum('credit_amount');
+
+                $bankBalance = $bankAccount->opening_balance + $bankTotalDebits - $bankTotalCredits;
+
+                // Force update the bank account balance
+                $bankAccount->update([
+                    'current_balance' => $bankBalance,
+                    'last_transaction_date' => $request->date
+                ]);
+
+                Log::info('After updating bank account balance', [
+                    'bank_account_id' => $bankAccount->id,
+                    'current_balance_after' => $bankAccount->fresh()->current_balance,
+                    'calculated_balance' => $bankBalance,
+                    'total_debits' => $bankTotalDebits,
+                    'total_credits' => $bankTotalCredits
+                ]);
+
+                Log::info('Before updating customer account balance', [
+                    'customer_account_id' => $customerAccount->id,
+                    'current_balance_before' => $customerAccount->current_balance
+                ]);
+
+                // Manual calculation for customer account (asset type)
+                $customerTotalDebits = $customerAccount->voucherEntries()
+                    ->whereHas('voucher', function($q) {
+                        $q->where('status', 'posted');
+                    })->sum('debit_amount');
+
+                $customerTotalCredits = $customerAccount->voucherEntries()
+                    ->whereHas('voucher', function($q) {
+                        $q->where('status', 'posted');
+                    })->sum('credit_amount');
+
+                $customerBalance = $customerAccount->opening_balance + $customerTotalDebits - $customerTotalCredits;
+
+                // Force update the customer account balance
+                $customerAccount->update([
+                    'current_balance' => $customerBalance,
+                    'last_transaction_date' => $request->date
+                ]);
+
+                Log::info('After updating customer account balance', [
+                    'customer_account_id' => $customerAccount->id,
+                    'current_balance_after' => $customerAccount->fresh()->current_balance,
+                    'calculated_balance' => $customerBalance,
+                    'total_debits' => $customerTotalDebits,
+                    'total_credits' => $customerTotalCredits
+                ]);
+
+                // Update customer outstanding balance
+                $customer = Customer::where('ledger_account_id', $customerAccount->id)->first();
+                if ($customer) {
+                    $outstandingBalance = max(0, $customerBalance); // Only positive balances are outstanding
+
+                    // Force update customer outstanding balance
+                    $customer->update(['outstanding_balance' => $outstandingBalance]);
+
+                    Log::info('Updated customer outstanding balance', [
+                        'customer_id' => $customer->id,
+                        'outstanding_balance_before' => $customer->getOriginal('outstanding_balance'),
+                        'outstanding_balance_after' => $customer->fresh()->outstanding_balance,
+                        'ledger_balance' => $customerBalance
+                    ]);
+                } else {
+                    Log::warning('Customer not found for ledger account', [
+                        'ledger_account_id' => $customerAccount->id
+                    ]);
+                }
+
+            } catch (\Exception $e) {
+                Log::error('Error updating account balances: ' . $e->getMessage());
+                Log::error('Stack trace: ' . $e->getTraceAsString());
+                // Don't throw here, as the main transaction should still succeed
+            }
+
+            DB::commit();            Log::info('Payment recording completed successfully');
 
             return response()->json(['message' => 'Payment recorded successfully']);
 

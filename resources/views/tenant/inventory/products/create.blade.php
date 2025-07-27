@@ -216,7 +216,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="form-group">
                     <label for="purchase_rate" class="block text-sm font-medium text-gray-700 mb-1">
-                        Purchase Rate <span class="text-red-500">*</span>
+                        Purchase Rate/ Net Cost  <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <span class="absolute left-3 top-2 text-gray-500">₦</span>
@@ -230,7 +230,7 @@
 
                 <div class="form-group">
                     <label for="sales_rate" class="block text-sm font-medium text-gray-700 mb-1">
-                        Sales Rate <span class="text-red-500">*</span>
+                        Sales Rate/Service Cost <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <span class="absolute left-3 top-2 text-gray-500">₦</span>

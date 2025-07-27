@@ -14,17 +14,27 @@ class LedgerAccount extends Model
         'name',
         'code',
         'account_group_id',
+        'account_type',
+        'parent_id',
         'opening_balance',
+        'current_balance',
+        'last_transaction_date',
         'balance_type',
         'address',
         'phone',
         'email',
+        'description',
         'is_active',
+        'is_system_account',
+        'tags',
     ];
 
     protected $casts = [
         'opening_balance' => 'decimal:2',
+        'current_balance' => 'decimal:2',
+        'last_transaction_date' => 'date',
         'is_active' => 'boolean',
+        'is_system_account' => 'boolean',
     ];
 
     // Relationships
@@ -115,52 +125,95 @@ class LedgerAccount extends Model
     public function updateCurrentBalance()
     {
         $currentBalance = $this->getCurrentBalance();
-        $this->update(['current_balance' => $currentBalance]);
+        $lastTransactionDate = $this->getLastTransactionDate();
+
+        $this->update([
+            'current_balance' => $currentBalance,
+            'last_transaction_date' => $lastTransactionDate
+        ]);
+
         return $currentBalance;
     }
 
     public function getCurrentBalance($asOfDate = null, $useCache = true)
     {
-        if ($useCache && !$asOfDate && $this->current_balance !== null) {
-            return $this->current_balance;
-        }
+        // Skip cache if explicitly requested or if calculating for a specific date
+        if (!$useCache || $asOfDate || $this->current_balance === null) {
+            $query = $this->voucherEntries()
+                ->whereHas('voucher', function ($q) use ($asOfDate) {
+                    $q->where('status', 'posted');
+                    if ($asOfDate) {
+                        $q->where('voucher_date', '<=', $asOfDate);
+                    }
+                });
 
-        $query = $this->voucherEntries()
-            ->whereHas('voucher', function ($q) use ($asOfDate) {
-                $q->where('status', 'posted');
-                if ($asOfDate) {
-                    $q->where('voucher_date', '<=', $asOfDate);
+            $totalDebits = $query->sum('debit_amount');
+            $totalCredits = $query->sum('credit_amount');
+
+            // Calculate based on account type and nature
+            // For asset and expense accounts: Debit increases balance, Credit decreases balance
+            // For liability, equity, and income accounts: Credit increases balance, Debit decreases balance
+
+            // If account_type is not set, determine it from the account group or name
+            $accountType = $this->account_type;
+            if (!$accountType) {
+                // Fallback logic based on account name patterns
+                $name = strtolower($this->name);
+                if (strpos($name, 'sales') !== false || strpos($name, 'income') !== false || strpos($name, 'revenue') !== false) {
+                    $accountType = 'income';
+                } elseif (strpos($name, 'receivable') !== false || strpos($name, 'cash') !== false || strpos($name, 'bank') !== false) {
+                    $accountType = 'asset';
+                } elseif (strpos($name, 'payable') !== false || strpos($name, 'liability') !== false) {
+                    $accountType = 'liability';
+                } else {
+                    $accountType = 'asset'; // Default fallback
                 }
-            });
+            }
 
-        $totalDebits = $query->sum('debit_amount');
-        $totalCredits = $query->sum('credit_amount');
+            if (in_array($accountType, ['asset', 'expense'])) {
+                $currentBalance = $this->opening_balance + $totalDebits - $totalCredits;
+            } else {
+                // liability, equity, income
+                $currentBalance = $this->opening_balance + $totalCredits - $totalDebits;
+            }
 
-        // Calculate based on account type and nature
-        if (in_array($this->account_type, ['asset', 'expense'])) {
-            $currentBalance = $this->opening_balance + $totalDebits - $totalCredits;
-        } else {
-            $currentBalance = $this->opening_balance + $totalCredits - $totalDebits;
+            // Update current_balance if no date specified and not using cache
+            if (!$asOfDate && !$useCache) {
+                $this->updateQuietly(['current_balance' => $currentBalance]);
+            }
+
+            return $currentBalance;
         }
 
-        // Update current_balance if no date specified
-        if (!$asOfDate) {
-            $this->updateQuietly(['current_balance' => $currentBalance]);
-        }
-
-        return $currentBalance;
+        // Return cached value
+        return $this->current_balance;
     }
 
     public function getBalanceType($balance = null)
     {
         $balance = $balance ?? $this->getCurrentBalance();
 
+        // Determine account type if not set
+        $accountType = $this->account_type;
+        if (!$accountType) {
+            $name = strtolower($this->name);
+            if (strpos($name, 'sales') !== false || strpos($name, 'income') !== false || strpos($name, 'revenue') !== false) {
+                $accountType = 'income';
+            } elseif (strpos($name, 'receivable') !== false || strpos($name, 'cash') !== false || strpos($name, 'bank') !== false) {
+                $accountType = 'asset';
+            } elseif (strpos($name, 'payable') !== false || strpos($name, 'liability') !== false) {
+                $accountType = 'liability';
+            } else {
+                $accountType = 'asset';
+            }
+        }
+
         // For asset and expense accounts, positive balance is debit
-        if (in_array($this->accountGroup->nature, ['assets', 'expenses'])) {
+        if (in_array($accountType, ['asset', 'expense'])) {
             return $balance >= 0 ? 'dr' : 'cr';
         }
 
-        // For liability and income accounts, positive balance is credit
+        // For liability, equity, and income accounts, positive balance is credit
         return $balance >= 0 ? 'cr' : 'dr';
     }
 
