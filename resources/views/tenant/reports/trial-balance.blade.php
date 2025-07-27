@@ -1,6 +1,6 @@
 @extends('layouts.tenant')
 
-        
+
 
 @section('content')
 <div class="space-y-6">
@@ -9,17 +9,29 @@
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Trial Balance</h1>
             <p class="mt-1 text-sm text-gray-500">
-                Statement of all ledger account balances as of {{ \Carbon\Carbon::parse($asOfDate)->format('F d, Y') }}
+                @if(isset($fromDate) && isset($toDate))
+                    Statement of all ledger account balances from {{ \Carbon\Carbon::parse($fromDate)->format('F d, Y') }} to {{ \Carbon\Carbon::parse($toDate)->format('F d, Y') }}
+                @else
+                    Statement of all ledger account balances as of {{ \Carbon\Carbon::parse($asOfDate ?? now())->format('F d, Y') }}
+                @endif
             </p>
         </div>
         <div class="flex items-center space-x-3">
             <form method="GET" class="flex items-center space-x-3">
                 <div>
-                    <label for="as_of_date" class="block text-sm font-medium text-gray-700 mb-1">As of Date</label>
+                    <label for="from_date" class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
                     <input type="date"
-                           name="as_of_date"
-                           id="as_of_date"
-                           value="{{ $asOfDate }}"
+                           name="from_date"
+                           id="from_date"
+                           value="{{ $fromDate ?? now()->startOfMonth()->format('Y-m-d') }}"
+                           class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                </div>
+                <div>
+                    <label for="to_date" class="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                    <input type="date"
+                           name="to_date"
+                           id="to_date"
+                           value="{{ $toDate ?? now()->format('Y-m-d') }}"
                            class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-primary-500 focus:border-primary-500">
                 </div>
                 <div class="flex items-end">
@@ -54,7 +66,11 @@
         <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-medium text-gray-900">Trial Balance</h3>
             <p class="mt-1 text-sm text-gray-500">
-                All active accounts with non-zero balances as of {{ \Carbon\Carbon::parse($asOfDate)->format('F d, Y') }}
+                @if(isset($fromDate) && isset($toDate))
+                    All active accounts with non-zero balances from {{ \Carbon\Carbon::parse($fromDate)->format('F d, Y') }} to {{ \Carbon\Carbon::parse($toDate)->format('F d, Y') }}
+                @else
+                    All active accounts with non-zero balances as of {{ \Carbon\Carbon::parse($asOfDate ?? now())->format('F d, Y') }}
+                @endif
             </p>
         </div>
 
@@ -382,20 +398,52 @@ function exportToExcel() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "trial_balance_{{ $asOfDate }}.csv");
+
+    // Generate filename based on date range
+    let filename = "trial_balance";
+    @if(isset($fromDate) && isset($toDate))
+        filename += "_{{ $fromDate }}_to_{{ $toDate }}";
+    @else
+        filename += "_{{ $asOfDate ?? now()->format('Y-m-d') }}";
+    @endif
+    filename += ".csv";
+
+    link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 }
 
 // Add date range validation
-document.getElementById('as_of_date').addEventListener('change', function() {
-    const selectedDate = new Date(this.value);
+document.getElementById('from_date').addEventListener('change', function() {
+    const fromDate = new Date(this.value);
+    const toDate = new Date(document.getElementById('to_date').value);
     const today = new Date();
 
-    if (selectedDate > today) {
-        alert('Cannot select future date for trial balance');
+    if (fromDate > today) {
+        alert('From date cannot be in the future');
         this.value = today.toISOString().split('T')[0];
+    }
+
+    if (toDate && fromDate > toDate) {
+        alert('From date cannot be later than To date');
+        this.value = '';
+    }
+});
+
+document.getElementById('to_date').addEventListener('change', function() {
+    const toDate = new Date(this.value);
+    const fromDate = new Date(document.getElementById('from_date').value);
+    const today = new Date();
+
+    if (toDate > today) {
+        alert('To date cannot be in the future');
+        this.value = today.toISOString().split('T')[0];
+    }
+
+    if (fromDate && toDate < fromDate) {
+        alert('To date cannot be earlier than From date');
+        this.value = '';
     }
 });
 </script>

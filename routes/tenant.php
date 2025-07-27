@@ -703,11 +703,11 @@ Route::middleware(['auth', 'tenant'])->group(function () {
         Route::get('/status/{export}', [ExportController::class, 'status'])->name('status');
     });
      // Profit & Loss
-            Route::get('/profit-loss', [AccountingController::class, 'profitLoss'])->name('tenant.reports.profit-loss');
+            Route::get('/profit-loss', [ReportsController::class, 'profitLoss'])->name('tenant.reports.profit-loss');
 
-             Route::get('/balance-sheet', [AccountingController::class, 'balanceSheet'])->name('tenant.reports.balance-sheet');
+             Route::get('/balance-sheet', [ReportsController::class, 'balanceSheet'])->name('tenant.reports.balance-sheet');
 
- Route::get('/cash-flow', [AccountingController::class, 'cashFlow'])->name('tenant.reports.cash-flow');
+ Route::get('/cash-flow', [ReportsController::class, 'cashFlow'])->name('tenant.reports.cash-flow');
 
                Route::get('/trial-balance', [ReportsController::class, 'trialBalance'])->name('tenant.reports.trial-balance');
 
