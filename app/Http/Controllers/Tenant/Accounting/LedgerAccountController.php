@@ -795,15 +795,81 @@ public function show(Request $request, Tenant $tenant, LedgerAccount $ledgerAcco
      */
     public function exportLedger(Tenant $tenant, LedgerAccount $ledgerAccount)
     {
+        $ledgerAccount->load(['accountGroup', 'parent']);
+
+        // Get all transactions for this account (only posted vouchers)
         $transactions = $ledgerAccount->voucherEntries()
             ->with(['voucher'])
+            ->whereHas('voucher', function ($query) {
+                $query->where('status', 'posted');
+            })
             ->orderBy('created_at')
             ->get();
 
-        return Excel::download(
-            new LedgerExport($ledgerAccount, $transactions),
-            "ledger-{$ledgerAccount->code}-" . now()->format('Y-m-d') . ".xlsx"
-        );
+        // Prepare CSV export
+        $filename = "ledger-{$ledgerAccount->code}-" . now()->format('Y-m-d-H-i-s') . ".csv";
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function() use ($ledgerAccount, $transactions) {
+            $file = fopen('php://output', 'w');
+
+            // CSV headers
+            fputcsv($file, [
+                'Date',
+                'Voucher Number',
+                'Description',
+                'Debit Amount',
+                'Credit Amount',
+                'Running Balance',
+                'Balance Type'
+            ]);
+
+            // Opening balance row
+            fputcsv($file, [
+                '-',
+                'OPENING BALANCE',
+                'Account Opening Balance',
+                '',
+                '',
+                number_format($ledgerAccount->opening_balance, 2),
+                $ledgerAccount->opening_balance >= 0 ? 'Dr' : 'Cr'
+            ]);
+
+            // Transaction rows with running balance
+            $runningBalance = $ledgerAccount->opening_balance;
+            foreach ($transactions as $transaction) {
+                $runningBalance += ($transaction->debit_amount - $transaction->credit_amount);
+
+                fputcsv($file, [
+                    $transaction->voucher->voucher_date->format('Y-m-d'),
+                    $transaction->voucher->voucher_number,
+                    $transaction->particulars ?? 'Transaction',
+                    $transaction->debit_amount > 0 ? number_format($transaction->debit_amount, 2) : '',
+                    $transaction->credit_amount > 0 ? number_format($transaction->credit_amount, 2) : '',
+                    number_format(abs($runningBalance), 2),
+                    $runningBalance >= 0 ? 'Dr' : 'Cr'
+                ]);
+            }
+
+            // Summary row
+            fputcsv($file, [
+                '',
+                'TOTALS',
+                'Ledger Summary',
+                number_format($transactions->sum('debit_amount'), 2),
+                number_format($transactions->sum('credit_amount'), 2),
+                number_format(abs($runningBalance), 2),
+                $runningBalance >= 0 ? 'Dr' : 'Cr'
+            ]);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
@@ -811,12 +877,43 @@ public function show(Request $request, Tenant $tenant, LedgerAccount $ledgerAcco
      */
     public function printLedger(Tenant $tenant, LedgerAccount $ledgerAccount)
     {
+        $ledgerAccount->load(['accountGroup', 'parent']);
+
+        // Get all transactions for this account (only posted vouchers)
         $transactions = $ledgerAccount->voucherEntries()
             ->with(['voucher'])
+            ->whereHas('voucher', function ($query) {
+                $query->where('status', 'posted');
+            })
             ->orderBy('created_at')
             ->get();
 
-        return view('tenant.accounting.ledger-accounts.print-ledger', compact('tenant', 'ledgerAccount', 'transactions'));
+        // Calculate running balance for each transaction
+        $runningBalance = $ledgerAccount->opening_balance;
+        $transactionsWithBalance = [];
+
+        foreach ($transactions as $transaction) {
+            $runningBalance += ($transaction->debit_amount - $transaction->credit_amount);
+            $transactionsWithBalance[] = [
+                'transaction' => $transaction,
+                'running_balance' => $runningBalance
+            ];
+        }
+
+        // Get totals
+        $totalDebits = $transactions->sum('debit_amount');
+        $totalCredits = $transactions->sum('credit_amount');
+        $currentBalance = $ledgerAccount->getCurrentBalance();
+
+        return view('tenant.accounting.ledger-accounts.print-ledger', compact(
+            'tenant',
+            'ledgerAccount',
+            'transactions',
+            'transactionsWithBalance',
+            'totalDebits',
+            'totalCredits',
+            'currentBalance'
+        ));
     }
 
     /**
