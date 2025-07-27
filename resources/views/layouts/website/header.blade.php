@@ -13,7 +13,7 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('og_title', 'Ballie - Nigerian Business Management Software')">
     <meta property="og:description" content="@yield('og_description', 'Comprehensive business management software built specifically for Nigerian businesses. Manage accounting, inventory, sales, and more in one platform.')">
-    <meta property="og:image" content="{{ asset('images/ballie_logo_og.png') }}">
+    <meta property="og:image" content="{{ asset('images/ballie_logo.png') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Ballie - Business Management Software">
@@ -25,7 +25,7 @@
     <meta name="twitter:url" content="{{ url()->current() }}">
     <meta name="twitter:title" content="@yield('twitter_title', 'Ballie - Nigerian Business Management Software')">
     <meta name="twitter:description" content="@yield('twitter_description', 'Comprehensive business management software built specifically for Nigerian businesses. Manage accounting, inventory, sales, and more in one platform.')">
-    <meta name="twitter:image" content="{{ asset('images/ballie_logo_og.png') }}">
+    <meta name="twitter:image" content="{{ asset('images/ballie_logo.png') }}">
     <meta name="twitter:image:alt" content="Ballie - Business Management Software">
 
     <!-- WhatsApp specific (uses Open Graph) -->
