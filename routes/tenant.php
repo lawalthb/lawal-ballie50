@@ -251,17 +251,17 @@ Route::prefix('ledger-accounts')->name('ledger-accounts.')->group(function () {
             });
 
             // Trial Balance
-            Route::get('/trial-balance', [AccountingController::class, 'trialBalance'])->name('trial-balance');
+            Route::get('/trial-balance', [ReportsController::class, 'trialBalance'])->name('trial-balance');
 
             // Balance Sheet
-            Route::get('/balance-sheet', [AccountingController::class, 'balanceSheet'])->name('balance-sheet');
+            Route::get('/balance-sheet', [ReportsController::class, 'balanceSheet'])->name('balance-sheet');
 
 
 
-            Route::get('/profit-loss', [AccountingController::class, 'profitLoss'])->name('profit-loss');
+            Route::get('/profit-loss', [ReportsController::class, 'profitLoss'])->name('profit-loss');
 
             // Cash Flow
-            Route::get('/cash-flow', [AccountingController::class, 'cashFlow'])->name('cash-flow');
+            Route::get('/cash-flow', [ReportsController::class, 'cashFlow'])->name('cash-flow');
         });
 
         // Inventory Module
@@ -709,6 +709,6 @@ Route::middleware(['auth', 'tenant'])->group(function () {
 
  Route::get('/cash-flow', [AccountingController::class, 'cashFlow'])->name('tenant.reports.cash-flow');
 
-               Route::get('/trial-balance', [AccountingController::class, 'trialBalance'])->name('tenant.reports.trial-balance');
+               Route::get('/trial-balance', [ReportsController::class, 'trialBalance'])->name('tenant.reports.trial-balance');
 
 });

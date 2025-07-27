@@ -22,13 +22,13 @@ class ReportsController extends Controller
 
         // Get income accounts
         $incomeAccounts = LedgerAccount::where('tenant_id', $tenant->id)
-            ->where('type', 'income')
+            ->where('account_type', 'income')
             ->where('is_active', true)
             ->get();
 
         // Get expense accounts
         $expenseAccounts = LedgerAccount::where('tenant_id', $tenant->id)
-            ->where('type', 'expense')
+            ->where('account_type', 'expense')
             ->where('is_active', true)
             ->get();
 
@@ -106,8 +106,15 @@ class ReportsController extends Controller
     {
         $asOfDate = $request->get('as_of_date', now()->toDateString());
 
+        // Get all active accounts with their relationships
         $accounts = LedgerAccount::where('tenant_id', $tenant->id)
             ->where('is_active', true)
+            ->with(['accountGroup', 'voucherEntries' => function($query) use ($asOfDate) {
+                $query->whereHas('voucher', function($voucherQuery) use ($asOfDate) {
+                    $voucherQuery->where('voucher_date', '<=', $asOfDate)
+                             ->where('status', 'posted');
+                });
+            }])
             ->orderBy('code')
             ->get();
 
@@ -116,17 +123,25 @@ class ReportsController extends Controller
         $totalCredits = 0;
 
         foreach ($accounts as $account) {
-            $balance = $account->current_balance ?? 0;
+            // Calculate actual balance based on transactions up to the specified date
+            $balance = $this->calculateAccountBalance($account, $asOfDate);
 
-            if ($balance != 0) {
-                // Determine if balance is debit or credit based on account type
-                $isDebit = in_array($account->type, ['asset', 'expense']);
+            if (abs($balance) >= 0.01) { // Show accounts with balance >= 1 cent
+                // Determine the natural balance side for this account type
+                $naturalBalanceSide = $this->getNaturalBalanceSide($account->account_type);
 
-                $debitAmount = $isDebit ? abs($balance) : 0;
-                $creditAmount = !$isDebit ? abs($balance) : 0;
+                if ($naturalBalanceSide === 'debit') {
+                    $debitAmount = $balance >= 0 ? $balance : 0;
+                    $creditAmount = $balance < 0 ? abs($balance) : 0;
+                } else {
+                    $creditAmount = $balance >= 0 ? $balance : 0;
+                    $debitAmount = $balance < 0 ? abs($balance) : 0;
+                }
 
                 $trialBalanceData[] = [
                     'account' => $account,
+                    'opening_balance' => $account->opening_balance ?? 0,
+                    'current_balance' => $balance,
                     'debit_amount' => $debitAmount,
                     'credit_amount' => $creditAmount,
                 ];
@@ -136,11 +151,60 @@ class ReportsController extends Controller
             }
         }
 
+        // Sort by account code
+        usort($trialBalanceData, function($a, $b) {
+            return strcmp($a['account']->code, $b['account']->code);
+        });
+
         return view('tenant.reports.trial-balance', compact(
             'trialBalanceData',
             'totalDebits',
             'totalCredits',
-            'asOfDate'
+            'asOfDate',
+            'tenant'
         ));
+    }
+
+    /**
+     * Calculate account balance as of specific date
+     */
+    private function calculateAccountBalance($account, $asOfDate)
+    {
+        // Start with opening balance
+        $balance = $account->opening_balance ?? 0;
+
+        // Add all transactions up to the specified date
+        $totalDebits = $account->voucherEntries()->whereHas('voucher', function($query) use ($asOfDate) {
+            $query->where('voucher_date', '<=', $asOfDate)
+                  ->where('status', 'posted');
+        })->sum('debit_amount');
+
+        $totalCredits = $account->voucherEntries()->whereHas('voucher', function($query) use ($asOfDate) {
+            $query->where('voucher_date', '<=', $asOfDate)
+                  ->where('status', 'posted');
+        })->sum('credit_amount');
+
+        // For accounting: Debit increases assets and expenses, Credit increases liabilities, equity, and income
+        if (in_array($account->account_type, ['asset', 'expense'])) {
+            // Assets and Expenses: Debit increases, Credit decreases
+            $balance = $balance + $totalDebits - $totalCredits;
+        } else {
+            // Liabilities, Equity, Income: Credit increases, Debit decreases
+            $balance = $balance + $totalCredits - $totalDebits;
+        }
+
+        return $balance;
+    }
+
+    /**
+     * Get the natural balance side for an account type
+     */
+    private function getNaturalBalanceSide($accountType)
+    {
+        return match($accountType) {
+            'asset', 'expense' => 'debit',
+            'liability', 'equity', 'income' => 'credit',
+            default => 'debit'
+        };
     }
 }
