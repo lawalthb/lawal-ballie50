@@ -31,7 +31,7 @@
         <!-- Trust indicators -->
         <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 opacity-70">
             <div class="text-center">
-                <div class="text-2xl font-bold text-brand-gold counter" data-target="8500">855</div>
+                <div class="text-2xl font-bold text-brand-gold counter" data-target="8500">8500</div>
                 <div class="text-gray-300 text-sm">Happy Customers</div>
             </div>
             <div class="text-center">
