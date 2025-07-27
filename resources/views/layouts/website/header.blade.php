@@ -8,6 +8,42 @@
     <title>@yield('title', 'Ballie - Nigerian Business Management Software')</title>
     <meta name="description" content="@yield('description', 'Comprehensive business management software built specifically for Nigerian businesses. Manage accounting, inventory, sales, and more in one platform.')">
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('og_title', 'Ballie - Nigerian Business Management Software')">
+    <meta property="og:description" content="@yield('og_description', 'Comprehensive business management software built specifically for Nigerian businesses. Manage accounting, inventory, sales, and more in one platform.')">
+    <meta property="og:image" content="{{ asset('images/ballie_logo_og.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Ballie - Business Management Software">
+    <meta property="og:site_name" content="Ballie">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="@yield('twitter_title', 'Ballie - Nigerian Business Management Software')">
+    <meta name="twitter:description" content="@yield('twitter_description', 'Comprehensive business management software built specifically for Nigerian businesses. Manage accounting, inventory, sales, and more in one platform.')">
+    <meta name="twitter:image" content="{{ asset('images/ballie_logo_og.png') }}">
+    <meta name="twitter:image:alt" content="Ballie - Business Management Software">
+
+    <!-- WhatsApp specific (uses Open Graph) -->
+    <meta property="og:image:type" content="image/png">
+
+    <!-- Additional meta tags -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Ballie">
+    <meta name="keywords" content="@yield('keywords', 'business management software, accounting software Nigeria, inventory management, invoicing, Nigerian business, ERP software')">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/ballie_logo.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/ballie_logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/ballie_logo.png') }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Inter:400,500,600,700" rel="stylesheet" />

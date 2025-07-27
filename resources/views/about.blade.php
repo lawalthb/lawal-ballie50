@@ -253,7 +253,7 @@
                 </div>
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Name Name</h3>
                 <p class="text-brand-blue mb-4 font-medium">CEO & Co-Founder</p>
-                <p class="text-gray-600 text-sm mb-6">Former McKinsey consultant with 10+ years experience helping Nigerian businesses scale. Passionate about technology and entrepreneurship.</p>
+                <p class="text-gray-600 text-sm mb-6">Former Phocus consultant with 15+ years experience helping Nigerian businesses scale. Passionate about technology and entrepreneurship.</p>
                 <div class="flex justify-center space-x-4">
                     <a href="#" class="text-brand-blue hover:text-brand-teal transition-colors">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -274,7 +274,7 @@
                 </div>
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Name Name</h3>
                 <p class="text-brand-teal mb-4 font-medium">CTO & Co-Founder</p>
-                <p class="text-gray-600 text-sm mb-6">Software architect with experience at Google and Microsoft, passionate about African tech innovation and scalable systems.</p>
+                <p class="text-gray-600 text-sm mb-6">Software architect with experience at Talosmart Technology and OgiTech, passionate about African tech innovation and scalable systems.</p>
                 <div class="flex justify-center space-x-4">
                     <a href="#" class="text-brand-teal hover:text-brand-blue transition-colors">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
