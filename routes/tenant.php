@@ -184,6 +184,10 @@ Route::prefix('ledger-accounts')->name('ledger-accounts.')->group(function () {
      Route::get('/', [LedgerAccountController::class, 'index'])->name('index');
     Route::get('/create', [LedgerAccountController::class, 'create'])->name('create');
        Route::get('/template', [LedgerAccountController::class, 'downloadTemplate'])->name('template');
+
+    // Search API - MUST be before parameterized routes
+    Route::get('/search', [LedgerAccountController::class, 'search'])->name('search');
+
     Route::post('/', [LedgerAccountController::class, 'store'])->name('store');
     Route::get('/{ledgerAccount}', [LedgerAccountController::class, 'show'])->name('show');
     Route::get('/{ledgerAccount}/edit', [LedgerAccountController::class, 'edit'])->name('edit');

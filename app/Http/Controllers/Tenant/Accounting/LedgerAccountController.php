@@ -8,6 +8,7 @@ use App\Models\AccountGroup;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class LedgerAccountController extends Controller
@@ -927,6 +928,65 @@ public function show(Request $request, Tenant $tenant, LedgerAccount $ledgerAcco
             'total_debits' => $ledgerAccount->getTotalDebits(),
             'total_credits' => $ledgerAccount->getTotalCredits(),
         ]);
+    }
+
+    /**
+     * Search ledger accounts for autocomplete
+     */
+    public function search(Request $request, Tenant $tenant)
+    {
+        try {
+            $query = $request->get('q', '');
+
+            if (strlen($query) < 2) {
+                return response()->json([]);
+            }
+
+            $accounts = LedgerAccount::where('tenant_id', $tenant->id)
+                ->where('is_active', true)
+                ->where(function ($q) use ($query) {
+                    $q->where('name', 'like', "%{$query}%")
+                      ->orWhere('code', 'like', "%{$query}%");
+                })
+                ->with(['accountGroup'])
+                ->orderBy('name')
+                ->limit(10)
+                ->get(['id', 'name', 'code', 'account_type', 'current_balance', 'account_group_id']);
+
+            $results = $accounts->map(function ($account) use ($tenant) {
+                try {
+                    // Use current_balance from database or calculate if null
+                    $currentBalance = $account->current_balance ?? $account->getCurrentBalance();
+
+                    return [
+                        'id' => $account->id,
+                        'name' => $account->name,
+                        'code' => $account->code,
+                        'account_type' => ucfirst($account->account_type ?? 'asset'),
+                        'current_balance' => (float) $currentBalance,
+                        'account_group' => $account->accountGroup?->name ?? 'N/A',
+                        'url' => route('tenant.accounting.ledger-accounts.show', [$tenant, $account])
+                    ];
+                } catch (\Exception $e) {
+                    // Fallback for individual account errors
+                    return [
+                        'id' => $account->id,
+                        'name' => $account->name,
+                        'code' => $account->code,
+                        'account_type' => ucfirst($account->account_type ?? 'asset'),
+                        'current_balance' => 0.00,
+                        'account_group' => 'N/A',
+                        'url' => route('tenant.accounting.ledger-accounts.show', [$tenant, $account])
+                    ];
+                }
+            });
+
+            return response()->json($results);
+
+        } catch (\Exception $e) {
+            Log::error('Ledger account search error: ' . $e->getMessage());
+            return response()->json(['error' => 'Search failed'], 500);
+        }
     }
 
     private function createDefaultAccountGroups(Tenant $tenant)
