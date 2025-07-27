@@ -423,11 +423,11 @@
                 <h3 class="text-xl font-semibold text-gray-900 mb-3">Email Support</h3>
                 <p class="text-gray-600 mb-4">Send us detailed questions and get comprehensive responses within 2 hours.</p>
                 <div class="space-y-2">
-                    <a href="mailto:support@ballie.ng" class="block text-brand-blue hover:text-brand-teal font-medium transition-colors">
-                        support@ballie.ng
+                    <a href="mailto:support@ballie.co" class="block text-brand-blue hover:text-brand-teal font-medium transition-colors">
+                        support@ballie.co
                     </a>
-                    <a href="mailto:sales@ballie.ng" class="block text-brand-blue hover:text-brand-teal font-medium transition-colors">
-                        sales@ballie.ng
+                    <a href="mailto:sales@ballie.co" class="block text-brand-blue hover:text-brand-teal font-medium transition-colors">
+                        sales@ballie.co
                     </a>
                 </div>
                 <div class="mt-4 text-sm text-gray-500">
@@ -1057,7 +1057,7 @@
                             </svg>
                             <div>
                                 <div class="font-semibold text-gray-900">Emergency Email</div>
-                                <a href="mailto:emergency@ballie.ng" class="text-red-600 font-medium">emergency@ballie.ng</a>
+                                <a href="mailto:emergency@ballie.co" class="text-red-600 font-medium">emergency@ballie.co</a>
                             </div>
                         </div>
 

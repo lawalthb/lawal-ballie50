@@ -167,7 +167,7 @@
                                 <span class="text-gray-600">/month</span>
                             </span>
                             <span class="yearly-price hidden">
-                                <span class="text-4xl font-bold price-highlight">₦6,375</span>
+                                <span class="text-4xl font-bold price-highlight">₦5,000</span>
                                 <span class="text-gray-600">/month</span>
                                 <div class="text-sm text-brand-green mt-1 font-semibold">Billed yearly (₦76,500) - Save ₦13,500!</div>
                             </span>

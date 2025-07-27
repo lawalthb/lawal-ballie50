@@ -98,7 +98,7 @@
         <!-- Header -->
         <div class="text-center mb-8">
             <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span class="text-white font-bold text-2xl">B</span>
+                <span class="text-white font-bold text-2xl">B'</span>
             </div>
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Join Ballie Today</h1>
             <p class="text-gray-200">Start your 30-day free trial and transform your business</p>
