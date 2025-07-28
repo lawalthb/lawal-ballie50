@@ -1,12 +1,6 @@
 <div class="bg-white shadow-sm rounded-lg border border-gray-200" x-data="invoiceItems()">
-    <!-- Debug Info -->
-    @if(config('app.debug'))
-        <div class="px-6 py-2 bg-yellow-50 border-b border-yellow-200 text-xs">
-            <strong>Debug:</strong> Products count: {{ isset($products) ? count($products) : 'Not set' }} | 
-            First product: {{ isset($products) && count($products) > 0 ? $products->first()->name : 'None' }}
-        </div>
-    @endif
-    
+   
+
     <div class="px-6 py-4 border-b border-gray-200">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-medium text-gray-900">📦 Invoice Items</h3>

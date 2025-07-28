@@ -53,6 +53,8 @@
                             </div>
                         </a>
 
+                     
+
                         <a href="{{ route('features') }}" class="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:border-brand-blue transition-colors">
                             <div class="w-10 h-10 rounded-full bg-brand-teal flex items-center justify-center mr-3">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

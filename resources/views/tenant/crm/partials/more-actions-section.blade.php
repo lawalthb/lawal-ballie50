@@ -28,7 +28,7 @@
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <a href="{{ route('tenant.crm.customers.create', ['tenant' => $tenant->slug]) }}"
-               class="modal-action-card bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-blue-500 to-blue-600 border border-blue-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,7 +41,7 @@
             </a>
 
             <a href="{{ route('tenant.crm.customers.index', ['tenant' => $tenant->slug]) }}"
-               class="modal-action-card bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-green-500 to-green-600 border border-green-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +54,7 @@
             </a>
 
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-purple-500 to-purple-600 border border-purple-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,7 +67,7 @@
             </a>
 
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-indigo-500 to-indigo-600 border border-indigo-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,7 +91,7 @@
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-emerald-500 to-emerald-600 border border-emerald-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,7 +104,7 @@
             </a>
 
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-teal-500 to-teal-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-teal-500 to-teal-600 border border-teal-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,7 +117,7 @@
             </a>
 
              <a href="#"
-               class="modal-action-card bg-gradient-to-br from-cyan-500 to-cyan-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-cyan-500 to-cyan-600 border border-cyan-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,7 +130,7 @@
             </a>
 
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-sky-500 to-sky-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-sky-500 to-sky-600 border border-sky-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,7 +143,7 @@
             </a>
 
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-violet-500 to-violet-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-violet-500 to-violet-600 border border-violet-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,7 +156,7 @@
             </a>
 
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-rose-500 to-rose-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-rose-500 to-rose-600 border border-rose-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,7 +169,7 @@
             </a>
 
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-orange-500 to-orange-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-orange-500 to-orange-600 border border-orange-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,7 +193,7 @@
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-amber-500 to-amber-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-amber-500 to-amber-600 border border-amber-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +206,7 @@
             </a>
 
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-yellow-500 to-yellow-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-yellow-500 to-yellow-600 border border-yellow-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -219,7 +219,7 @@
             </a>
 
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-lime-500 to-lime-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-lime-500 to-lime-600 border border-lime-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,7 +243,7 @@
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <a href="{{ route('tenant.crm.vendors.create', ['tenant' => $tenant->slug]) }}"
-               class="modal-action-card bg-gradient-to-br from-fuchsia-500 to-fuchsia-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-fuchsia-500 to-fuchsia-600 border border-fuchsia-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -255,7 +255,7 @@
                 </div>
             </a>
             <a href="{{ route('tenant.crm.vendors.index', ['tenant' => $tenant->slug]) }}"
-               class="modal-action-card bg-gradient-to-br from-pink-500 to-pink-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-pink-500 to-pink-600 border border-pink-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -268,7 +268,7 @@
             </a>
 
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-red-500 to-red-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-red-500 to-red-600 border border-red-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -281,7 +281,7 @@
             </a>
 
             <a href="#"
-               class="modal-action-card bg-gradient-to-br from-gray-500 to-gray-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+               class="modal-action-card bg-gradient-to-br from-gray-500 to-gray-600 border border-gray-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">

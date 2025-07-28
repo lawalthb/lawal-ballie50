@@ -116,7 +116,7 @@
                         </label>
                         <select id="date_format" name="date_format"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-colors" required>
-                            <option value="d/m/Y" {{ old('date_format', $currentTenant->settings['date_format'] ?? 'd/m/Y') == 'd/m/Y' ? 'selected' : '' }}>DD/MM/YYYY (31/12/2024)</option>
+                            <option value="d/m/Y" {{ old('date_format', $currentTenant->settings['date_format'] ?? 'd/m/Y') == 'd/m/Y' ? 'selected' : '' }}>DD/MM/YYYY (31/12/2025)</option>
                             <option value="m/d/Y" {{ old('date_format', $currentTenant->settings['date_format'] ?? '') == 'm/d/Y' ? 'selected' : '' }}>MM/DD/YYYY (12/31/2024)</option>
                             <option value="Y-m-d" {{ old('date_format', $currentTenant->settings['date_format'] ?? '') == 'Y-m-d' ? 'selected' : '' }}>YYYY-MM-DD (2024-12-31)</option>
                         </select>
