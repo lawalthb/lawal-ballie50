@@ -430,4 +430,108 @@ class CustomerController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    /**
+     * Display customer statements with balances
+     */
+    public function statements(Request $request, Tenant $tenant)
+    {
+        $query = Customer::with(['invoices', 'payments', 'ledgerAccount'])
+            ->where('tenant_id', $tenant->id);
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('company_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhere('customer_code', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by customer type
+        if ($request->filled('customer_type')) {
+            $query->where('customer_type', $request->get('customer_type'));
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->get('status'));
+        }
+
+        // Get customers with their balance calculations
+        $customers = $query->get()->map(function ($customer) {
+            $ledgerAccount = $customer->ledgerAccount;
+
+            if ($ledgerAccount) {
+                // Get current balance from ledger account
+                $currentBalance = $ledgerAccount->getCurrentBalance();
+
+                // Get total debits and credits
+                $totalDebits = $ledgerAccount->getTotalDebits();
+                $totalCredits = $ledgerAccount->getTotalCredits();
+
+                // Calculate running balance and balance type
+                $balanceType = $ledgerAccount->getBalanceType($currentBalance);
+
+                $customer->total_debits = $totalDebits;
+                $customer->total_credits = $totalCredits;
+                $customer->current_balance = abs($currentBalance);
+                $customer->balance_type = $balanceType;
+                $customer->running_balance = $currentBalance;
+            } else {
+                $customer->total_debits = 0;
+                $customer->total_credits = 0;
+                $customer->current_balance = 0;
+                $customer->balance_type = 'dr';
+                $customer->running_balance = 0;
+            }
+
+            return $customer;
+        });
+
+        // Sort by balance if requested
+        $sortField = $request->get('sort', 'created_at');
+        $sortDirection = $request->get('direction', 'desc');
+
+        if ($sortField === 'current_balance') {
+            $customers = $sortDirection === 'desc'
+                ? $customers->sortByDesc('current_balance')
+                : $customers->sortBy('current_balance');
+        } elseif ($sortField === 'total_debits') {
+            $customers = $sortDirection === 'desc'
+                ? $customers->sortByDesc('total_debits')
+                : $customers->sortBy('total_debits');
+        } elseif ($sortField === 'total_credits') {
+            $customers = $sortDirection === 'desc'
+                ? $customers->sortByDesc('total_credits')
+                : $customers->sortBy('total_credits');
+        }
+
+        // Paginate manually
+        $perPage = 20;
+        $currentPage = $request->get('page', 1);
+        $items = $customers->forPage($currentPage, $perPage);
+
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $customers->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('tenant.crm.customers.statements', [
+            'tenant' => $tenant,
+            'customers' => $paginated,
+            'search' => $request->get('search'),
+            'customer_type' => $request->get('customer_type'),
+            'status' => $request->get('status'),
+            'sort' => $sortField,
+            'direction' => $sortDirection
+        ]);
+    }
 }

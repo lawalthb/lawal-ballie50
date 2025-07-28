@@ -53,7 +53,7 @@
                 </div>
             </a>
 
-            <a href="#"
+            <a href="{{ route('tenant.crm.customers.statements', ['tenant' => $tenant->slug]) }}"
                class="modal-action-card bg-gradient-to-br from-purple-500 to-purple-600 border border-purple-400 text-white p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="flex flex-col items-center text-center">
                     <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-3">
