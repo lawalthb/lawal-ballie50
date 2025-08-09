@@ -56,7 +56,9 @@
 
     <!-- CRM Overview Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
         <div class="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-blue-500">
+                 <a href="{{ route('tenant.crm.customers.index', ['tenant' => $tenant->slug]) }}">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">Total Customers</p>
@@ -76,9 +78,11 @@
                     </svg>
                 </div>
             </div>
+                 </a>
         </div>
 
         <div class="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-green-500">
+               <a href="{{ route('tenant.crm.vendors.index', ['tenant' => $tenant->slug]) }}">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">Total Vendors</p>
@@ -98,6 +102,7 @@
                     </svg>
                 </div>
             </div>
+               </a>
         </div>
 
         <div class="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-purple-500">
