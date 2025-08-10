@@ -397,39 +397,6 @@ Route::prefix('ledger-accounts')->name('ledger-accounts.')->group(function () {
             Route::get('/reports', [PosController::class, 'reports'])->name('reports');
         });
 
-        // Payroll Module
-        Route::prefix('payroll')->name('tenant.payroll.')->group(function () {
-            Route::get('/', [PayrollController::class, 'index'])->name('index');
-
-            // Employees
-            Route::prefix('employees')->name('employees.')->group(function () {
-                Route::get('/', [PayrollController::class, 'employees'])->name('index');
-                Route::get('/create', [PayrollController::class, 'createEmployee'])->name('create');
-                Route::post('/', [PayrollController::class, 'storeEmployee'])->name('store');
-                Route::get('/{employee}', [PayrollController::class, 'showEmployee'])->name('show');
-                Route::get('/{employee}/edit', [PayrollController::class, 'editEmployee'])->name('edit');
-                Route::put('/{employee}', [PayrollController::class, 'updateEmployee'])->name('update');
-                Route::delete('/{employee}', [PayrollController::class, 'destroyEmployee'])->name('destroy');
-            });
-
-            // Payroll Processing
-            Route::prefix('processing')->name('processing.')->group(function () {
-                Route::get('/', [PayrollController::class, 'processing'])->name('index');
-                Route::get('/create', [PayrollController::class, 'createPayroll'])->name('create');
-                Route::post('/', [PayrollController::class, 'storePayroll'])->name('store');
-                Route::get('/{payroll}', [PayrollController::class, 'showPayroll'])->name('show');
-                Route::post('/{payroll}/approve', [PayrollController::class, 'approvePayroll'])->name('approve');
-                Route::post('/{payroll}/process', [PayrollController::class, 'processPayroll'])->name('process');
-            });
-
-            // Payroll Reports
-            Route::prefix('reports')->name('reports.')->group(function () {
-                Route::get('/summary', [PayrollController::class, 'payrollSummary'])->name('summary');
-                Route::get('/detailed', [PayrollController::class, 'detailedReport'])->name('detailed');
-                Route::get('/tax-report', [PayrollController::class, 'taxReport'])->name('tax-report');
-            });
-        });
-
         // Reports Module
         Route::prefix('reports')->name('tenant.reports.')->group(function () {
             Route::get('/', [ReportsController::class, 'index'])->name('index');
@@ -734,9 +701,13 @@ Route::prefix('payroll')->name('tenant.payroll.')->middleware(['auth', 'onboardi
         // Employee actions
         Route::patch('/{employee}/toggle-status', [PayrollController::class, 'toggleEmployeeStatus'])->name('toggle-status');
         Route::post('/{employee}/reset-portal-link', [PayrollController::class, 'resetPortalLink'])->name('reset-portal-link');
-    });
 
-    // Departments
+        // Export employees
+        Route::get('/export', [PayrollController::class, 'exportEmployees'])->name('export');
+
+        // Payslip generation
+        Route::get('/{employee}/payslip', [PayrollController::class, 'generatePayslip'])->name('payslip');
+    });    // Departments
     Route::prefix('departments')->name('departments.')->group(function () {
         Route::get('/', [PayrollController::class, 'departments'])->name('index');
         Route::post('/', [PayrollController::class, 'storeDepartment'])->name('store');

@@ -424,4 +424,110 @@ class PayrollController extends Controller
             'tenant', 'taxData', 'year', 'month'
         ));
     }
+
+    /**
+     * Export employees data to CSV
+     */
+    public function exportEmployees(Request $request, Tenant $tenant)
+    {
+        $employees = Employee::where('tenant_id', $tenant->id)
+            ->with(['department', 'currentSalary.salaryComponents.component'])
+            ->orderBy('first_name')
+            ->get();
+
+        $filename = 'employees_' . $tenant->slug . '_' . now()->format('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($employees) {
+            $file = fopen('php://output', 'w');
+
+            // Add CSV headers
+            fputcsv($file, [
+                'Employee ID',
+                'First Name',
+                'Last Name',
+                'Email',
+                'Phone',
+                'Department',
+                'Position',
+                'Employment Date',
+                'Status',
+                'Basic Salary',
+                'Total Salary',
+                'Bank Account',
+                'Address'
+            ]);
+
+            // Add employee data
+            foreach ($employees as $employee) {
+                $basicSalary = $employee->currentSalary ?
+                    $employee->currentSalary->salaryComponents
+                        ->where('component.type', 'earning')
+                        ->where('component.name', 'Basic Salary')
+                        ->first()?->amount ?? 0 : 0;
+
+                $totalSalary = $employee->currentSalary ?
+                    $employee->currentSalary->salaryComponents
+                        ->where('component.type', 'earning')
+                        ->sum('amount') : 0;
+
+                fputcsv($file, [
+                    $employee->employee_id,
+                    $employee->first_name,
+                    $employee->last_name,
+                    $employee->email,
+                    $employee->phone,
+                    $employee->department?->name ?? '',
+                    $employee->position,
+                    $employee->employment_date?->format('Y-m-d') ?? '',
+                    ucfirst($employee->status),
+                    number_format($basicSalary, 2),
+                    number_format($totalSalary, 2),
+                    $employee->bank_account_number ?? '',
+                    $employee->address ?? ''
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Generate payslip for an employee
+     */
+    public function generatePayslip(Request $request, Tenant $tenant, Employee $employee)
+    {
+        // Validate that the employee belongs to this tenant
+        if ($employee->tenant_id !== $tenant->id) {
+            abort(404);
+        }
+
+        $year = $request->get('year', date('Y'));
+        $month = $request->get('month', date('m'));
+
+        // Get payroll runs for this employee for the specified period
+        $payrollRuns = PayrollRun::whereHas('payrollPeriod', function($q) use ($tenant, $year, $month) {
+            $q->where('tenant_id', $tenant->id)
+              ->whereYear('pay_date', $year)
+              ->whereMonth('pay_date', $month);
+        })->where('employee_id', $employee->id)
+          ->with(['payrollPeriod', 'employee.currentSalary.salaryComponents.component'])
+          ->get();
+
+        if ($payrollRuns->isEmpty()) {
+            return redirect()->back()->with('error', 'No payslip data found for the selected period.');
+        }
+
+        $payrollRun = $payrollRuns->first();
+
+        return view('tenant.payroll.employees.payslip', compact(
+            'tenant', 'employee', 'payrollRun', 'year', 'month'
+        ));
+    }
 }
