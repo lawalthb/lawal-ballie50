@@ -716,3 +716,84 @@ Route::middleware(['auth', 'tenant'])->group(function () {
                Route::get('/trial-balance', [ReportsController::class, 'trialBalance'])->name('tenant.reports.trial-balance');
 
 });
+
+// Payroll Management Routes
+Route::prefix('payroll')->name('tenant.payroll.')->middleware(['auth', 'onboarding.completed'])->group(function () {
+    Route::get('/', [PayrollController::class, 'index'])->name('index');
+
+    // Employees Management
+    Route::prefix('employees')->name('employees.')->group(function () {
+        Route::get('/', [PayrollController::class, 'employees'])->name('index');
+        Route::get('/create', [PayrollController::class, 'createEmployee'])->name('create');
+        Route::post('/', [PayrollController::class, 'storeEmployee'])->name('store');
+        Route::get('/{employee}', [PayrollController::class, 'showEmployee'])->name('show');
+        Route::get('/{employee}/edit', [PayrollController::class, 'editEmployee'])->name('edit');
+        Route::put('/{employee}', [PayrollController::class, 'updateEmployee'])->name('update');
+        Route::delete('/{employee}', [PayrollController::class, 'destroyEmployee'])->name('destroy');
+
+        // Employee actions
+        Route::patch('/{employee}/toggle-status', [PayrollController::class, 'toggleEmployeeStatus'])->name('toggle-status');
+        Route::post('/{employee}/reset-portal-link', [PayrollController::class, 'resetPortalLink'])->name('reset-portal-link');
+    });
+
+    // Departments
+    Route::prefix('departments')->name('departments.')->group(function () {
+        Route::get('/', [PayrollController::class, 'departments'])->name('index');
+        Route::post('/', [PayrollController::class, 'storeDepartment'])->name('store');
+        Route::put('/{department}', [PayrollController::class, 'updateDepartment'])->name('update');
+        Route::delete('/{department}', [PayrollController::class, 'destroyDepartment'])->name('destroy');
+    });
+
+    // Salary Components
+    Route::prefix('components')->name('components.')->group(function () {
+        Route::get('/', [PayrollController::class, 'components'])->name('index');
+        Route::post('/', [PayrollController::class, 'storeComponent'])->name('store');
+        Route::put('/{component}', [PayrollController::class, 'updateComponent'])->name('update');
+        Route::delete('/{component}', [PayrollController::class, 'destroyComponent'])->name('destroy');
+    });
+
+    // Payroll Processing
+    Route::prefix('processing')->name('processing.')->group(function () {
+        Route::get('/', [PayrollController::class, 'processing'])->name('index');
+        Route::get('/create', [PayrollController::class, 'createPayroll'])->name('create');
+        Route::post('/', [PayrollController::class, 'storePayroll'])->name('store');
+        Route::get('/{period}', [PayrollController::class, 'showPayroll'])->name('show');
+        Route::post('/{period}/generate', [PayrollController::class, 'generatePayroll'])->name('generate');
+        Route::post('/{period}/approve', [PayrollController::class, 'approvePayroll'])->name('approve');
+        Route::get('/{period}/export-bank-file', [PayrollController::class, 'exportBankFile'])->name('export-bank-file');
+        Route::get('/{period}/export-tax-file', [PayrollController::class, 'exportTaxFile'])->name('export-tax-file');
+    });
+
+    // Loans Management
+    Route::prefix('loans')->name('loans.')->group(function () {
+        Route::get('/', [PayrollController::class, 'loans'])->name('index');
+        Route::get('/create', [PayrollController::class, 'createLoan'])->name('create');
+        Route::post('/', [PayrollController::class, 'storeLoan'])->name('store');
+        Route::get('/{loan}', [PayrollController::class, 'showLoan'])->name('show');
+        Route::put('/{loan}', [PayrollController::class, 'updateLoan'])->name('update');
+        Route::post('/{loan}/approve', [PayrollController::class, 'approveLoan'])->name('approve');
+    });
+
+    // Payroll Reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/summary', [PayrollController::class, 'payrollSummary'])->name('summary');
+        Route::get('/detailed', [PayrollController::class, 'detailedReport'])->name('detailed');
+        Route::get('/tax-report', [PayrollController::class, 'taxReport'])->name('tax-report');
+        Route::get('/bank-schedule', [PayrollController::class, 'bankSchedule'])->name('bank-schedule');
+    });
+});
+
+// Employee Self-Service Portal (outside tenant middleware)
+Route::prefix('employee-portal')->name('payroll.portal.')->group(function () {
+    Route::match(['get', 'post'], '/{token}/login', [App\Http\Controllers\Payroll\EmployeePortalController::class, 'login'])->name('login');
+    Route::get('/{token}/dashboard', [App\Http\Controllers\Payroll\EmployeePortalController::class, 'dashboard'])->name('dashboard');
+    Route::get('/{token}/payslips', [App\Http\Controllers\Payroll\EmployeePortalController::class, 'payslips'])->name('payslips');
+    Route::get('/{token}/payslip/{payslip}', [App\Http\Controllers\Payroll\EmployeePortalController::class, 'payslip'])->name('payslip');
+    Route::get('/{token}/payslip/{payslip}/download', [App\Http\Controllers\Payroll\EmployeePortalController::class, 'downloadPayslip'])->name('payslip.download');
+    Route::get('/{token}/profile', [App\Http\Controllers\Payroll\EmployeePortalController::class, 'profile'])->name('profile');
+    Route::post('/{token}/profile', [App\Http\Controllers\Payroll\EmployeePortalController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/{token}/loans', [App\Http\Controllers\Payroll\EmployeePortalController::class, 'loans'])->name('loans');
+    Route::get('/{token}/tax-certificate/{year?}', [App\Http\Controllers\Payroll\EmployeePortalController::class, 'taxCertificate'])->name('tax-certificate');
+    Route::get('/{token}/tax-certificate/{year}/download', [App\Http\Controllers\Payroll\EmployeePortalController::class, 'downloadTaxCertificate'])->name('tax-certificate.download');
+    Route::post('/{token}/logout', [App\Http\Controllers\Payroll\EmployeePortalController::class, 'logout'])->name('logout');
+});
