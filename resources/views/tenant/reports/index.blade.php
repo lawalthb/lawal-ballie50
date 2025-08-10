@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="space-y-2">
-                <a href="{{ route('tenant.reports.financial', ['tenant' => $tenant->slug]) }}" class="block text-sm text-blue-600 hover:text-blue-800">• Profit & Loss Statement</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Profit & Loss Statement</a>
                 <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Balance Sheet</a>
                 <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Cash Flow Statement</a>
                 <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Trial Balance</a>
@@ -58,7 +58,7 @@
                 </div>
             </div>
             <div class="space-y-2">
-                <a href="{{ route('tenant.reports.sales', ['tenant' => $tenant->slug]) }}" class="block text-sm text-blue-600 hover:text-blue-800">• Sales Summary</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Sales Summary</a>
                 <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Customer Sales Report</a>
                 <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Product Sales Report</a>
                 <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Sales by Period</a>
@@ -79,10 +79,73 @@
                 </div>
             </div>
             <div class="space-y-2">
-                <a href="{{ route('tenant.reports.inventory', ['tenant' => $tenant->slug]) }}" class="block text-sm text-blue-600 hover:text-blue-800">• Stock Summary</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Stock Summary</a>
                 <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Low Stock Alert</a>
                 <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Stock Valuation</a>
                 <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Stock Movement</a>
+            </div>
+        </div>
+
+        <!-- Payroll Reports -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Payroll Reports</h3>
+                    <p class="text-sm text-gray-500">Employee payroll and tax analysis</p>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Payroll Summary</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Tax Report</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Department Analysis</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Bank Schedule</a>
+            </div>
+        </div>
+
+        <!-- CRM Reports -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">CRM Reports</h3>
+                    <p class="text-sm text-gray-500">Customer analytics and performance</p>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Customer Overview</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Lead Conversion</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Sales Performance</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Activity Summary</a>
+            </div>
+        </div>
+
+        <!-- POS Reports -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">POS Reports</h3>
+                    <p class="text-sm text-gray-500">Point of sale analytics and trends</p>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Daily Sales</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Product Performance</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Payment Methods</a>
+                <a href="#" class="block text-sm text-blue-600 hover:text-blue-800">• Cashier Performance</a>
             </div>
         </div>
     </div>
