@@ -29,6 +29,9 @@ use App\Http\Controllers\Tenant\Admin\AdminController;
 use App\Http\Controllers\Tenant\Crm\VendorController;
 use App\Http\Controllers\Tenant\Inventory\UnitController;
 use App\Models\Tenant;
+use App\Models\Tenant\Role;
+use App\Models\Tenant\Permission;
+use App\Models\Tenant\Team;
 use App\Http\Controllers\Tenant\Accounting\LedgerAccountController;
 use App\Http\Controllers\Auth\SocialAuthController;
 
@@ -58,6 +61,19 @@ use App\Http\Controllers\Tenant\Api\ExportController;
 // Route model binding for tenant
 Route::bind('tenant', function ($value) {
     return Tenant::where('slug', $value)->firstOrFail();
+});
+
+// Route model bindings for admin management
+Route::bind('role', function ($value) {
+    return \App\Models\Tenant\Role::where('tenant_id', tenant('id'))->findOrFail($value);
+});
+
+Route::bind('permission', function ($value) {
+    return \App\Models\Tenant\Permission::findOrFail($value);
+});
+
+Route::bind('team', function ($value) {
+    return \App\Models\Tenant\Team::where('tenant_id', tenant('id'))->findOrFail($value);
 });
 
 // Guest routes (login, register, etc.)

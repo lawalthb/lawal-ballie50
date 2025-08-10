@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Tenant;
+namespace App\Http\Controllers\Tenant\Inventory;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
@@ -62,11 +62,11 @@ class ProductController extends Controller
         $outOfStockProducts = Product::where('tenant_id', $tenant->id)->outOfStock()->count();
 
         return view('tenant.inventory.products.index', compact(
-            'products', 
-            'categories', 
+            'products',
+            'categories',
             'tenant',
             'totalProducts',
-            'activeProducts', 
+            'activeProducts',
             'lowStockProducts',
             'outOfStockProducts'
         ));

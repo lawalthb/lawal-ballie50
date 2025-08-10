@@ -82,5 +82,6 @@ class Kernel extends HttpKernel
         'check.onboarding' => \App\Http\Middleware\CheckOnboarding::class,
         'onboarding.completed' => \App\Http\Middleware\OnboardingCompleted::class,
         'role' => \App\Http\Middleware\CheckUserRole::class,
+        'permission' => \App\Http\Middleware\CheckPermission::class,
     ];
 }

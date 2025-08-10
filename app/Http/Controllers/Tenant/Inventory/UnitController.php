@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Tenant;
+namespace App\Http\Controllers\Tenant\Inventory;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\StoreUnitRequest;
