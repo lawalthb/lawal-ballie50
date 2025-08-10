@@ -777,23 +777,45 @@ function posSystem() {
 }
 
 /* List view vs Grid view */
-.list-view .product-card {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
+.list-view-item {
+    padding: 0 !important;
 }
 
-.list-view .product-image {
-    width: 3.5rem;
-    height: 3.5rem;
-    margin-right: 1rem;
+.list-view-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -5px rgba(60, 44, 100, 0.12), 0 8px 10px -6px rgba(60, 44, 100, 0.12);
 }
 
-.list-view .product-info {
-    flex: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.list-view-item .price-tag {
+    display: none; /* Hide grid-style price tag in list view */
+}
+
+/* Enhanced hover effects for list view */
+.list-view-item:hover .group-hover\:text-\[var\(--color-dark-purple\)\] {
+    color: var(--color-dark-purple) !important;
+}
+
+.dark-mode .list-view-item:hover .dark\:group-hover\:text-\[var\(--color-purple-accent\)\] {
+    color: var(--color-purple-accent) !important;
+}
+
+/* Ensure consistent spacing and alignment */
+.list-view-item .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Better mobile responsiveness for list view */
+@media (max-width: 640px) {
+    .list-view-item {
+        padding: 0.5rem !important;
+    }
+
+    .list-view-item .flex {
+        gap: 0.75rem;
+    }
 }
 
 /* Dark mode */
