@@ -3,331 +3,162 @@
 @section('title', 'Point of Sale - ' . tenant()->name)
 
 @section('content')
-<div x-data="posSystem()" class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-    <!-- POS Header -->
-    <div class="bg-white shadow-lg border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center space-x-6">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-cash-register text-white text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Point of Sale</h1>
-                    @if(isset($activeSession))
-                        <p class="text-sm text-gray-600">{{ $activeSession->cashRegister->name }}</p>
-                    @endif
-                </div>
+<div x-data="posSystem()"
+     x-init="init()"
+     x-ref="posRoot"
+     :class="{'touch-mode': touchMode, 'dark-mode': darkMode}"
+     class="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+
+    <!-- Notification -->
+    <div x-show="showNotification"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform translate-y-4"
+         x-transition:enter-end="opacity-100 transform translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 transform translate-y-0"
+         x-transition:leave-end="opacity-0 transform translate-y-4"
+         class="fixed bottom-4 right-4 z-50 shadow-lg rounded-lg p-4 max-w-md glass-morphism"
+         :class="{
+             'bg-green-50/90 dark:bg-green-900/50 border-green-200 dark:border-green-700': notificationType === 'success',
+             'bg-blue-50/90 dark:bg-blue-900/50 border-blue-200 dark:border-blue-700': notificationType === 'info',
+             'bg-yellow-50/90 dark:bg-yellow-900/50 border-yellow-200 dark:border-yellow-700': notificationType === 'warning',
+             'bg-red-50/90 dark:bg-red-900/50 border-red-200 dark:border-red-700': notificationType === 'error'
+         }">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 mr-3">
+                <template x-if="notificationType === 'success'">
+                    <i class="fas fa-check-circle text-green-500 dark:text-green-400 text-xl"></i>
+                </template>
+                <template x-if="notificationType === 'info'">
+                    <i class="fas fa-info-circle text-blue-500 dark:text-blue-400 text-xl"></i>
+                </template>
+                <template x-if="notificationType === 'warning'">
+                    <i class="fas fa-exclamation-triangle text-yellow-500 dark:text-yellow-400 text-xl"></i>
+                </template>
+                <template x-if="notificationType === 'error'">
+                    <i class="fas fa-times-circle text-red-500 dark:text-red-400 text-xl"></i>
+                </template>
             </div>
-            @if(isset($activeSession))
-                <div class="hidden md:flex items-center space-x-4 text-sm">
-                    <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full">
-                        <i class="fas fa-circle text-xs mr-1"></i>
-                        Session Active
-                    </div>
-                    <span class="text-gray-600">
-                        Started: {{ $activeSession->opened_at->format('H:i') }}
-                    </span>
-                </div>
-            @endif
-        </div>
-        <div class="flex items-center space-x-3">
-            @if(isset($activeSession))
-                <a href="{{ route('tenant.pos.close-session', ['tenant' => $tenant->slug]) }}"
-                   class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="hidden md:inline">Close Session</span>
-                </a>
-            @else
-                <a href="{{ route('tenant.pos.register-session', ['tenant' => $tenant->slug]) }}"
-                   class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
-                    <i class="fas fa-cash-register"></i>
-                    <span class="hidden md:inline">Open Session</span>
-                </a>
-            @endif
+            <div class="flex-1">
+                <p class="font-medium"
+                   :class="{
+                       'text-green-800 dark:text-green-200': notificationType === 'success',
+                       'text-blue-800 dark:text-blue-200': notificationType === 'info',
+                       'text-yellow-800 dark:text-yellow-200': notificationType === 'warning',
+                       'text-red-800 dark:text-red-200': notificationType === 'error'
+                   }"
+                   x-text="notificationMessage"></p>
+            </div>
+            <div class="ml-4">
+                <button @click="showNotification = false"
+                        class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         </div>
     </div>
 
-    @if(!isset($activeSession))
-        <!-- No Active Session Message -->
-        <div class="flex items-center justify-center min-h-[60vh]">
-            <div class="text-center">
-                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-cash-register text-gray-400 text-3xl"></i>
+    <div class="pos-container">
+        @include('tenant.pos.partials.header')
+
+        @if(!isset($activeSession))
+            @include('tenant.pos.partials.no-session')
+        @else
+            <!-- Main POS Interface -->
+            <div class="flex flex-col lg:flex-row overflow-hidden pos-interface relative" style="height: calc(100vh - 140px);">
+                <!-- Mobile Cart Toggle Button -->
+                <button @click="showCartSidebar = !showCartSidebar"
+                        class="fixed bottom-4 left-4 z-30 lg:hidden bg-[var(--color-dark-purple)] dark:bg-[var(--color-purple-accent)] text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                    <div class="relative">
+                        <i class="fas fa-shopping-cart text-lg"></i>
+                        <div x-show="cartItems.length > 0"
+                             class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center cart-badge">
+                            <span x-text="cartItems.length"></span>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Mobile Cart Backdrop Overlay -->
+                <div x-show="showCartSidebar"
+                     @click="showCartSidebar = false"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 bg-black/50 dark:bg-gray-900/50 backdrop-blur-sm z-30 lg:hidden"></div>
+
+                <!-- Product Grid -->
+                <main class="flex-1 bg-gray-100 dark:bg-gray-900 p-4 md:p-6 overflow-y-auto transition-colors duration-300"
+                     :class="{'lg:block': !showCartSidebar}">
+                    @include('tenant.pos.partials.product-grid')
+                    @includeWhen(isset($recentSales) && $recentSales->count() > 0, 'tenant.pos.partials.recent-sales')
+                </main>
+
+                @include('tenant.pos.partials.cart-sidebar')
+            </div>
+
+            @include('tenant.pos.partials.payment-modal')
+        @endif
+    </div>
+
+    <!-- Keyboard Shortcuts Guide -->
+    <div x-show="showKeyboardShortcuts"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="fixed inset-0 bg-black/50 dark:bg-gray-900/80 flex items-center justify-center z-50 p-4"
+         style="display: none;">
+        <div class="bg-white dark:bg-gray-800 backdrop-blur-sm rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-700 dark:text-white p-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-[var(--color-dark-purple)] to-[var(--color-light-purple)] rounded-lg flex items-center justify-center shadow-md">
+                        <i class="fas fa-keyboard text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Keyboard Shortcuts</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Quick access to features</p>
+                    </div>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">No Active Session</h2>
-                <p class="text-gray-600 mb-6">Please open a cash register session to start selling</p>
-                <a href="{{ route('tenant.pos.register-session', ['tenant' => $tenant->slug]) }}"
-                   class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold">
-                    Open Cash Register Session
-                </a>
+                <button @click="showKeyboardShortcuts = false"
+                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors duration-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <span class="font-medium">Toggle Dark Mode</span>
+                    <span class="shortcut-label">Ctrl+D</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <span class="font-medium">Toggle Fullscreen</span>
+                    <span class="shortcut-label">Ctrl+F</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <span class="font-medium">Toggle Quick Add</span>
+                    <span class="shortcut-label">Ctrl+B</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <span class="font-medium">Close Modals</span>
+                    <span class="shortcut-label">Esc</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <span class="font-medium">Toggle Cart (Mobile)</span>
+                    <span class="shortcut-label"><i class="fas fa-shopping-cart"></i></span>
+                </div>
+            </div>
+            <div class="mt-6">
+                <button @click="showKeyboardShortcuts = false"
+                        class="w-full py-3 px-4 bg-[var(--color-dark-purple)] dark:bg-[var(--color-purple-accent)] text-white rounded-lg hover:opacity-90 transition-opacity duration-200">
+                    Got it
+                </button>
             </div>
         </div>
-    @else
-        <!-- Main POS Interface -->
-        <div class="flex overflow-hidden" style="height: calc(100vh - 140px);">
-            <!-- Product Grid -->
-            <div class="flex-1 bg-gray-50 p-6 overflow-y-auto">
-                <!-- Search and Filters -->
-                <div class="mb-6">
-                    <div class="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4">
-                        <div class="flex-1">
-                            <div class="relative">
-                                <input type="text"
-                                       x-model="searchQuery"
-                                       @input="filterProducts()"
-                                       placeholder="Search products by name, SKU, or barcode..."
-                                       class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white shadow-sm">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i class="fas fa-search text-gray-400"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex space-x-3">
-                            @if(isset($categories) && $categories->count() > 0)
-                                <select x-model="selectedCategory"
-                                        @change="filterProducts()"
-                                        class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white shadow-sm">
-                                    <option value="">All Categories</option>
-                                    @foreach($categories as $category)
-                                        @if($category)
-                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            @endif
-                            @if(isset($recentSales) && $recentSales->count() > 0)
-                                <button @click="showRecentSales = !showRecentSales"
-                                        class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-xl transition-colors duration-200 flex items-center space-x-2">
-                                    <i class="fas fa-history"></i>
-                                    <span class="hidden md:inline">Recent</span>
-                                </button>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Products Grid -->
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4" x-show="!showRecentSales">
-                    @if(isset($products) && $products->count() > 0)
-                        @foreach($products as $product)
-                        <div @click="addToCart({{ $product->toJson() }})"
-                             class="group bg-white rounded-xl shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-lg hover:border-purple-300 transition-all duration-200 transform hover:-translate-y-1">
-                            @if($product->images && $product->images->count() > 0)
-                                <img src="{{ $product->images->first()->image_url }}"
-                                     alt="{{ $product->name }}"
-                                     class="w-full h-32 object-cover rounded-lg mb-3">
-                            @else
-                                <div class="w-full h-32 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg mb-3 flex items-center justify-center">
-                                    <i class="fas fa-box text-purple-400 text-2xl"></i>
-                                </div>
-                            @endif
-                            <h3 class="font-semibold text-gray-900 text-sm mb-1 line-clamp-2 group-hover:text-purple-600">{{ $product->name }}</h3>
-                            <p class="text-xs text-gray-500 mb-2">{{ $product->sku }}</p>
-                            <div class="flex items-center justify-between">
-                                <span class="text-lg font-bold text-purple-600">₦{{ number_format($product->selling_price, 2) }}</span>
-                                <span class="text-xs {{ $product->stock_quantity > 10 ? 'text-green-600' : ($product->stock_quantity > 0 ? 'text-yellow-600' : 'text-red-600') }}">
-                                    {{ $product->stock_quantity }} left
-                                </span>
-                            </div>
-                        </div>
-                        @endforeach
-                    @else
-                        <div class="col-span-full text-center py-12">
-                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-box text-gray-400 text-xl"></i>
-                            </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">No Products Available</h3>
-                            <p class="text-gray-500 mb-4">Add products to your inventory to start selling</p>
-                            <a href="{{ route('tenant.inventory.products.create', ['tenant' => $tenant->slug]) }}"
-                               class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
-                                Add Products
-                            </a>
-                        </div>
-                    @endif
-                </div>
-
-                <!-- Recent Sales -->
-                @if(isset($recentSales) && $recentSales->count() > 0)
-                    <div x-show="showRecentSales" class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h2 class="text-xl font-semibold text-gray-900">Recent Sales</h2>
-                            <button @click="showRecentSales = false" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="grid gap-4">
-                            @foreach($recentSales as $sale)
-                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="font-semibold text-gray-900">{{ $sale->sale_number }}</span>
-                                    <span class="text-sm text-gray-500">{{ $sale->created_at->format('H:i') }}</span>
-                                </div>
-                                <div class="text-sm text-gray-600 mb-2">
-                                    @if($sale->customer)
-                                        {{ $sale->customer->customer_type === 'individual'
-                                            ? $sale->customer->first_name . ' ' . $sale->customer->last_name
-                                            : $sale->customer->company_name }}
-                                    @else
-                                        Walk-in Customer
-                                    @endif
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="font-bold text-purple-600">₦{{ number_format($sale->total_amount, 2) }}</span>
-                                    <div class="flex space-x-2">
-                                        <a href="{{ route('tenant.pos.receipt', ['tenant' => $tenant->slug, 'sale' => $sale->id]) }}"
-                                           class="text-blue-600 hover:text-blue-800 text-sm" target="_blank">
-                                            <i class="fas fa-receipt"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-            </div>
-
-            <!-- Cart Sidebar -->
-            <div class="w-96 bg-white shadow-2xl border-l border-gray-200 flex flex-col">
-                <!-- Cart Header -->
-                <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-600 to-purple-700 text-white">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-shopping-cart text-sm"></i>
-                            </div>
-                            <h2 class="text-lg font-semibold">Shopping Cart</h2>
-                        </div>
-                        <button @click="clearCart()"
-                                x-show="cartItems.length > 0"
-                                class="text-purple-200 hover:text-white text-sm transition-colors duration-200">
-                            Clear All
-                        </button>
-                    </div>
-                    <div class="mt-2 text-purple-200 text-sm" x-show="cartItems.length > 0">
-                        <span x-text="cartItems.length"></span> item<span x-show="cartItems.length !== 1">s</span> in cart
-                    </div>
-                </div>
-
-                <!-- Cart Items -->
-                <div class="flex-1 overflow-y-auto p-4">
-                    <div x-show="cartItems.length === 0" class="text-center py-12">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-shopping-cart text-gray-400 text-xl"></i>
-                        </div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">Cart is Empty</h3>
-                        <p class="text-gray-500 text-sm">Add products to start selling</p>
-                    </div>
-
-                    <template x-for="(item, index) in cartItems" :key="index">
-                        <div class="bg-gray-50 rounded-xl p-4 mb-3 border border-gray-100">
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex-1">
-                                    <h4 class="font-semibold text-gray-900 text-sm" x-text="item.name"></h4>
-                                    <p class="text-xs text-gray-500" x-text="item.sku"></p>
-                                    <p class="text-xs text-purple-600 font-medium" x-text="'₦' + formatMoney(item.unit_price) + ' each'"></p>
-                                </div>
-                                <button @click="removeFromCart(index)"
-                                        class="text-red-500 hover:text-red-700 p-1">
-                                    <i class="fas fa-trash text-sm"></i>
-                                </button>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-2">
-                                    <button @click="updateQuantity(index, item.quantity - 1)"
-                                            class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors duration-200">
-                                        <i class="fas fa-minus text-xs"></i>
-                                    </button>
-                                    <input type="number"
-                                           x-model="item.quantity"
-                                           @input="updateLineTotal(index)"
-                                           class="w-16 px-2 py-1 text-center border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
-                                           min="0.01" step="0.01">
-                                    <button @click="updateQuantity(index, parseFloat(item.quantity) + 1)"
-                                            class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors duration-200">
-                                        <i class="fas fa-plus text-xs"></i>
-                                    </button>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-bold text-purple-600" x-text="'₦' + formatMoney(item.lineTotal)"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-
-                <!-- Cart Totals -->
-                <div class="border-t border-gray-200 p-4 space-y-3">
-                    <div class="flex justify-between text-sm">
-                        <span>Subtotal:</span>
-                        <span x-text="'₦' + formatMoney(cartSubtotal)"></span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span>Tax:</span>
-                        <span x-text="'₦' + formatMoney(cartTax)"></span>
-                    </div>
-                    <div class="flex justify-between text-lg font-bold border-t pt-3 text-purple-600">
-                        <span>Total:</span>
-                        <span x-text="'₦' + formatMoney(cartTotal)"></span>
-                    </div>
-                </div>
-
-                <!-- Customer Selection -->
-                <div class="border-t border-gray-200 p-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Customer (Optional)</label>
-                    <select x-model="selectedCustomer"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                        <option value="">Walk-in Customer</option>
-                        @if(isset($customers))
-                            @foreach($customers as $customer)
-                                <option value="{{ $customer->id }}">
-                                    @if($customer->customer_type === 'individual')
-                                        {{ $customer->first_name }} {{ $customer->last_name }}
-                                    @else
-                                        {{ $customer->company_name }}
-                                    @endif
-                                </option>
-                            @endforeach
-                        @endif
-                    </select>
-                </div>
-
-                <!-- Checkout Button -->
-                <div class="p-4 border-t border-gray-200">
-                    <button @click="proceedToPayment()"
-                            :disabled="cartItems.length === 0"
-                            :class="cartItems.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800'"
-                            class="w-full text-white py-3 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2">
-                        <i class="fas fa-credit-card"></i>
-                        <span>Proceed to Payment</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Payment Modal -->
-        <div x-show="showPaymentModal"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100 scale-100"
-             x-transition:leave-end="opacity-0 scale-95"
-             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-             style="display: none;">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-                <!-- Payment modal content would go here -->
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4">Payment Processing</h3>
-                    <p class="text-gray-600 mb-4">Payment modal functionality to be implemented...</p>
-                    <button @click="showPaymentModal = false"
-                            class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg">
-                        Close
-                    </button>
-                </div>
-            </div>
-        </div>
-    @endif
+    </div>
 </div>
 
 <script>
@@ -339,6 +170,27 @@ function posSystem() {
         selectedCustomer: '',
         showPaymentModal: false,
         showRecentSales: false,
+        touchMode: false,
+        isFullscreen: false,
+        darkMode: false,
+        quickAddEnabled: true,
+        favoriteProducts: [],
+        showScanner: false,
+        categoryFilter: 'all',
+        paymentMethod: 'cash',
+        viewMode: 'grid', // grid or list
+        showMenuDropdown: false,
+        showCartSidebar: (typeof window !== 'undefined' && window.innerWidth >= 1024), // Show by default on desktop, hidden on mobile
+        showKeyboardShortcuts: false,
+        payments: [{
+            method_id: '',
+            amount: 0,
+            reference: ''
+        }],
+        isProcessing: false,
+        showNotification: false,
+        notificationMessage: '',
+        notificationType: 'info', // 'info', 'success', 'warning', 'error'
 
         // Computed properties
         get cartSubtotal() {
@@ -354,6 +206,93 @@ function posSystem() {
 
         get cartTotal() {
             return this.cartSubtotal + this.cartTax;
+        },
+
+        get totalPaid() {
+            return this.payments.reduce((sum, payment) => sum + (parseFloat(payment.amount) || 0), 0);
+        },
+
+        get balance() {
+            return this.totalPaid - this.cartTotal;
+        },
+
+        get change() {
+            return Math.max(0, this.balance);
+        },
+
+        // Helper methods
+        formatMoney(amount) {
+            return new Intl.NumberFormat('en-NG', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount || 0);
+        },
+
+        // Payment methods
+        addPayment() {
+            this.payments.push({
+                method_id: '',
+                amount: Math.max(0, this.cartTotal - this.totalPaid),
+                reference: ''
+            });
+        },
+
+        removePayment(index) {
+            if (this.payments.length > 1) {
+                this.payments.splice(index, 1);
+            }
+        },
+
+        setQuickAmount(amount) {
+            if (this.payments.length > 0) {
+                this.payments[0].amount = amount;
+            }
+        },
+
+        setExactAmount() {
+            if (this.payments.length > 0) {
+                this.payments[0].amount = this.cartTotal;
+            }
+        },
+
+        getPaymentMethod(methodId) {
+            // Check if payment methods are available from server
+            @if(isset($paymentMethods))
+                const methods = @json($paymentMethods);
+                return methods.find(method => method.id == methodId);
+            @else
+                // Fallback for demo purposes
+                const methods = [
+                    { id: 1, name: 'Cash', requires_reference: false },
+                    { id: 2, name: 'Card', requires_reference: true },
+                    { id: 3, name: 'Transfer', requires_reference: true }
+                ];
+                return methods.find(method => method.id == methodId);
+            @endif
+        },
+
+        completeSale() {
+            this.isProcessing = true;
+
+            // Simulate processing for demo purposes
+            setTimeout(() => {
+                this.isProcessing = false;
+                this.showPaymentModal = false;
+
+                // Show success message
+                this.notificationMessage = 'Sale completed successfully!';
+                this.notificationType = 'success';
+                this.showNotification = true;
+
+                // Reset cart
+                this.cartItems = [];
+                this.updateCart();
+
+                // Hide notification after 3 seconds
+                setTimeout(() => {
+                    this.showNotification = false;
+                }, 3000);
+            }, 1500);
         },
 
         // Methods
@@ -373,6 +312,20 @@ function posSystem() {
                     stock_quantity: product.stock_quantity,
                     lineTotal: parseFloat(product.selling_price)
                 });
+            }
+
+            // Show cart on mobile when adding first item
+            if (typeof window !== 'undefined' && window.innerWidth < 1024 && this.cartItems.length === 1) {
+                this.showCartSidebar = true;
+
+                // Show notification
+                this.notificationMessage = `${product.name} added to cart`;
+                this.notificationType = 'success';
+                this.showNotification = true;
+
+                setTimeout(() => {
+                    this.showNotification = false;
+                }, 2000);
             }
         },
 
@@ -409,21 +362,198 @@ function posSystem() {
             }
         },
 
+        updateCart() {
+            // Update cart totals and UI
+            this.$nextTick(() => {
+                // Force reactivity update
+                this.cartItems = [...this.cartItems];
+            });
+        },
+
         proceedToPayment() {
-            if (this.cartItems.length === 0) return;
+            if (this.cartItems.length === 0) {
+                this.notificationMessage = 'Cart is empty. Add items before proceeding to payment.';
+                this.notificationType = 'warning';
+                this.showNotification = true;
+
+                setTimeout(() => {
+                    this.showNotification = false;
+                }, 3000);
+                return;
+            }
             this.showPaymentModal = true;
         },
 
-        formatMoney(amount) {
-            return new Intl.NumberFormat('en-NG', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(amount || 0);
+        async toggleFullscreen() {
+            const el = this.$refs.posRoot || document.documentElement;
+            try {
+                if (!document.fullscreenElement) {
+                    if (el.requestFullscreen) await el.requestFullscreen();
+                } else {
+                    if (document.exitFullscreen) await document.exitFullscreen();
+                }
+            } catch (e) {
+                console.error('Fullscreen toggle failed', e);
+            }
+        },
+
+        toggleTouchMode() {
+            this.touchMode = !this.touchMode;
+        },
+
+        toggleDarkMode() {
+            this.darkMode = !this.darkMode;
+            if (typeof localStorage !== 'undefined') {
+                localStorage.setItem('pos_dark_mode', this.darkMode ? 'true' : 'false');
+            }
+        },
+
+        toggleViewMode() {
+            // Ensure viewMode is initialized
+            if (!this.viewMode) {
+                this.viewMode = 'grid';
+            }
+            this.viewMode = this.viewMode === 'grid' ? 'list' : 'grid';
+            if (typeof localStorage !== 'undefined') {
+                localStorage.setItem('pos_view_mode', this.viewMode);
+            }
+        },
+
+        toggleQuickAdd() {
+            this.quickAddEnabled = !this.quickAddEnabled;
+        },
+
+        toggleKeyboardShortcuts() {
+            this.showKeyboardShortcuts = !this.showKeyboardShortcuts;
+        },
+
+        toggleScanner() {
+            this.showScanner = !this.showScanner;
+            // Scanner implementation would go here
+        },
+
+        addToFavorites(product) {
+            if (!this.favoriteProducts.some(p => p.id === product.id)) {
+                this.favoriteProducts.push(product);
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('pos_favorites', JSON.stringify(this.favoriteProducts));
+                }
+            }
+        },
+
+        removeFromFavorites(productId) {
+            this.favoriteProducts = this.favoriteProducts.filter(p => p.id !== productId);
+            if (typeof localStorage !== 'undefined') {
+                localStorage.setItem('pos_favorites', JSON.stringify(this.favoriteProducts));
+            }
         },
 
         filterProducts() {
             // Product filtering implementation
             console.log('Filtering products...', this.searchQuery, this.selectedCategory);
+        },
+
+        init() {
+            // Initialize critical properties early to prevent undefined errors
+            if (!this.viewMode) {
+                this.viewMode = 'grid';
+            }
+            if (!this.cartItems) {
+                this.cartItems = [];
+            }
+            if (!this.favoriteProducts) {
+                this.favoriteProducts = [];
+            }
+            if (typeof this.showCartSidebar === 'undefined') {
+                this.showCartSidebar = (typeof window !== 'undefined' && window.innerWidth >= 1024);
+            }
+
+            if (typeof document !== 'undefined') {
+                document.addEventListener('fullscreenchange', () => {
+                    this.isFullscreen = !!document.fullscreenElement;
+                });
+            }
+
+            // Load preferences early
+            if (typeof localStorage !== 'undefined') {
+                // Load view mode preference first
+                const savedViewMode = localStorage.getItem('pos_view_mode');
+                if (savedViewMode) {
+                    this.viewMode = savedViewMode;
+                } else if (!this.viewMode) {
+                    this.viewMode = 'grid';
+                }
+
+                // Load dark mode preference
+                const savedDarkMode = localStorage.getItem('pos_dark_mode');
+                if (savedDarkMode) {
+                    this.darkMode = savedDarkMode === 'true';
+                } else {
+                    // Check if user prefers dark mode
+                    if (typeof window !== 'undefined' && window.matchMedia) {
+                        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        this.darkMode = prefersDark;
+                    }
+                }
+
+                // Load favorite products
+                const savedFavorites = localStorage.getItem('pos_favorites');
+                if (savedFavorites) {
+                    try {
+                        this.favoriteProducts = JSON.parse(savedFavorites);
+                    } catch (e) {
+                        console.error('Failed to parse favorites', e);
+                        this.favoriteProducts = [];
+                    }
+                }
+            }
+
+            // Add keyboard shortcuts
+            if (typeof window !== 'undefined') {
+                window.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'b') { // Ctrl+B for quick cart
+                        e.preventDefault();
+                        this.toggleQuickAdd();
+                    } else if (e.ctrlKey && e.key === 'd') { // Ctrl+D for dark mode
+                        e.preventDefault();
+                        this.toggleDarkMode();
+                    } else if (e.ctrlKey && e.key === 'f') { // Ctrl+F for fullscreen
+                        e.preventDefault();
+                        this.toggleFullscreen();
+                    } else if (e.ctrlKey && e.key === 'k') { // Ctrl+K for keyboard shortcuts
+                        e.preventDefault();
+                        this.toggleKeyboardShortcuts();
+                    } else if (e.key === 'Escape') {
+                        if (this.showPaymentModal) {
+                            this.showPaymentModal = false;
+                        } else if (this.showKeyboardShortcuts) {
+                            this.showKeyboardShortcuts = false;
+                        } else if (typeof window !== 'undefined' && window.innerWidth < 1024 && this.showCartSidebar) {
+                            this.showCartSidebar = false;
+                        }
+                    }
+                });
+            }
+
+            // Handle window resize for cart sidebar
+            if (typeof window !== 'undefined') {
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth >= 1024) {
+                        this.showCartSidebar = true;
+                    }
+                });
+            }
+
+            // Show welcome notification on load
+            setTimeout(() => {
+                this.notificationMessage = 'Welcome to the enhanced POS system!';
+                this.notificationType = 'info';
+                this.showNotification = true;
+
+                setTimeout(() => {
+                    this.showNotification = false;
+                }, 3000);
+            }, 1000);
         }
     }
 }
@@ -454,6 +584,253 @@ function posSystem() {
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
+}
+
+/* Theme colors */
+:root {
+    --color-dark-purple: #3c2c64;
+    --color-dark-purple-2: #2f224d;
+    --color-purple-light: #5a4387;
+    --color-purple-accent: #8a6dcc;
+    --color-purple-muted: rgba(60, 44, 100, 0.1);
+}
+
+/* Glass morphism */
+.glass-morphism {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .glass-morphism {
+    background-color: rgba(30, 30, 40, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pos-container {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.pos-interface {
+    transition: all 0.3s ease;
+}
+
+/* Product card styles */
+.product-card {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -5px rgba(60, 44, 100, 0.1), 0 8px 10px -6px rgba(60, 44, 100, 0.1);
+}
+
+.product-card .card-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.product-card:hover .card-actions {
+    opacity: 1;
+}
+
+.product-card .price-tag {
+    position: absolute;
+    top: 0.75rem;
+    left: 0;
+    background: var(--color-dark-purple);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    font-weight: bold;
+    font-size: 0.875rem;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    z-index: 5;
+}
+
+.product-card .stock-indicator {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    border-radius: 9999px;
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+/* Button styles */
+.btn-primary {
+    background-image: linear-gradient(to right, var(--color-dark-purple), var(--color-dark-purple-2));
+    color: #fff;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(60, 44, 100, 0.15);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-outline {
+    border: 1px solid var(--color-dark-purple);
+    color: var(--color-dark-purple);
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+.dark-mode .btn-outline {
+    border-color: var(--color-purple-accent);
+    color: var(--color-purple-accent);
+}
+
+.btn-outline:hover {
+    background-color: var(--color-dark-purple);
+    color: white;
+}
+
+.dark-mode .btn-outline:hover {
+    background-color: var(--color-purple-accent);
+}
+
+.text-primary { color: var(--color-dark-purple); }
+.dark-mode .text-primary { color: var(--color-purple-accent); }
+.bg-primary { background-color: var(--color-dark-purple); }
+.dark-mode .bg-primary { background-color: var(--color-purple-accent); }
+.border-primary { border-color: var(--color-dark-purple); }
+.dark-mode .border-primary { border-color: var(--color-purple-accent); }
+
+/* Touch mode */
+.touch-mode .touch-grow { transform: scale(1.05); }
+.touch-mode .touch-py { padding-top: 1rem; padding-bottom: 1rem; }
+.touch-mode .touch-btn { width: 2.75rem; height: 2.75rem; }
+.touch-mode .touch-input { font-size: 1rem; padding: 0.75rem 1rem; }
+.touch-mode .product-card { padding: 1.25rem; }
+.touch-mode .product-card .card-actions { opacity: 1; }
+
+/* Animation utilities */
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+.animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.animate-slide-in-left {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+.animate-slide-in-up {
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Cart indicator badge animation */
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.cart-badge {
+    animation: badgePulse 1.5s infinite;
+}
+
+/* List view vs Grid view */
+.list-view .product-card {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+}
+
+.list-view .product-image {
+    width: 3.5rem;
+    height: 3.5rem;
+    margin-right: 1rem;
+}
+
+.list-view .product-info {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Dark mode */
+.dark-mode .bg-white { background-color: #1e1e2d !important; }
+.dark-mode .bg-gray-50 { background-color: #151521 !important; }
+.dark-mode .bg-gray-100 { background-color: #1a1a2a !important; }
+.dark-mode .border-gray-200 { border-color: #2a2a3a !important; }
+.dark-mode .text-gray-900 { color: #e1e1e6 !important; }
+.dark-mode .text-gray-600,
+.dark-mode .text-gray-500 { color: #a0a0b0 !important; }
+
+.dark-mode .overflow-y-auto::-webkit-scrollbar-track {
+    background: #1a1a2a;
+}
+
+.dark-mode .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #3a3a4a;
+}
+
+/* Keyboard shortcuts tooltip */
+.shortcut-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.07);
+    color: rgba(0,0,0,0.7);
+    border-radius: 4px;
+    padding: 0.1rem 0.3rem;
+    font-size: 0.7rem;
+    margin-left: 0.5rem;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.dark-mode .shortcut-label {
+    background-color: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.7);
+    border-color: rgba(255,255,255,0.1);
 }
 </style>
 @endsection
