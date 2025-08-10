@@ -5,7 +5,7 @@
             <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
                 <span class="text-white font-bold text-lg">B</span>
             </div>
-            <div class="sidebar-title overflow-hidden whitespace-nowrap transition-opacity">
+                        <div class="sidebar-title overflow-hidden whitespace-nowrap transition-opacity">
                 <span class="text-xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
                     {{ $tenant->name ?? 'Ballie' }}
                 </span>
@@ -115,6 +115,20 @@
                         </svg>
                     </div>
                     <span class="menu-title whitespace-nowrap font-medium">Payroll</span>
+                </a>
+            </li>
+
+            <!-- Admin Management -->
+            <li>
+                <a href="{{ route('tenant.admin.index', ['tenant' => tenant()->slug]) }}"
+                   class="menu-item flex items-center px-4 py-3 rounded-xl group {{ request()->routeIs('tenant.admin.*') ? 'active' : '' }}"
+                   title="Admin Management">
+                    <div class="flex-shrink-0 w-6 h-6 mr-4 text-blue-400 group-hover:scale-110 transition-transform duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-2.239" />
+                        </svg>
+                    </div>
+                    <span class="menu-title whitespace-nowrap font-medium">Admin Management</span>
                 </a>
             </li>
 

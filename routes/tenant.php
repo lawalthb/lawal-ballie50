@@ -25,6 +25,7 @@ use App\Http\Controllers\Tenant\DocumentsController;
 use App\Http\Controllers\Tenant\ActivityController;
 use App\Http\Controllers\Tenant\ProductCategoryController;
 use App\Http\Controllers\Tenant\SettingsController;
+use App\Http\Controllers\Tenant\AdminController;
 use App\Http\Controllers\Tenant\Crm\VendorController;
 use App\Http\Controllers\Tenant\UnitController;
 use App\Models\Tenant;
@@ -751,6 +752,114 @@ Route::prefix('payroll')->name('tenant.payroll.')->middleware(['auth', 'onboardi
         Route::get('/detailed', [PayrollController::class, 'detailedReport'])->name('detailed');
         Route::get('/tax-report', [PayrollController::class, 'taxReport'])->name('tax-report');
         Route::get('/bank-schedule', [PayrollController::class, 'bankSchedule'])->name('bank-schedule');
+    });
+});
+
+// Admin Management Module
+Route::prefix('admin')->name('tenant.admin.')->middleware(['auth', 'onboarding.completed'])->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('index');
+
+    // Users & Admins Management
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [AdminController::class, 'users'])->name('index');
+        Route::get('/create', [AdminController::class, 'createUser'])->name('create');
+        Route::post('/', [AdminController::class, 'storeUser'])->name('store');
+        Route::get('/{user}', [AdminController::class, 'showUser'])->name('show');
+        Route::get('/{user}/edit', [AdminController::class, 'editUser'])->name('edit');
+        Route::put('/{user}', [AdminController::class, 'updateUser'])->name('update');
+        Route::delete('/{user}', [AdminController::class, 'destroyUser'])->name('destroy');
+
+        // User actions
+        Route::patch('/{user}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('toggle-status');
+        Route::post('/{user}/reset-password', [AdminController::class, 'resetUserPassword'])->name('reset-password');
+        Route::post('/{user}/send-invitation', [AdminController::class, 'sendInvitation'])->name('send-invitation');
+        Route::get('/export', [AdminController::class, 'exportUsers'])->name('export');
+        Route::post('/bulk-action', [AdminController::class, 'bulkUserAction'])->name('bulk-action');
+    });
+
+    // Roles & Permissions
+    Route::prefix('roles')->name('roles.')->group(function () {
+        Route::get('/', [AdminController::class, 'roles'])->name('index');
+        Route::get('/create', [AdminController::class, 'createRole'])->name('create');
+        Route::post('/', [AdminController::class, 'storeRole'])->name('store');
+        Route::get('/{role}', [AdminController::class, 'showRole'])->name('show');
+        Route::get('/{role}/edit', [AdminController::class, 'editRole'])->name('edit');
+        Route::put('/{role}', [AdminController::class, 'updateRole'])->name('update');
+        Route::delete('/{role}', [AdminController::class, 'destroyRole'])->name('destroy');
+
+        // Role actions
+        Route::post('/{role}/clone', [AdminController::class, 'cloneRole'])->name('clone');
+        Route::get('/matrix', [AdminController::class, 'permissionMatrix'])->name('matrix');
+    });
+
+    // Permissions Management
+    Route::prefix('permissions')->name('permissions.')->group(function () {
+        Route::get('/', [AdminController::class, 'permissions'])->name('index');
+        Route::get('/create', [AdminController::class, 'createPermission'])->name('create');
+        Route::post('/', [AdminController::class, 'storePermission'])->name('store');
+        Route::get('/{permission}', [AdminController::class, 'showPermission'])->name('show');
+        Route::get('/{permission}/edit', [AdminController::class, 'editPermission'])->name('edit');
+        Route::put('/{permission}', [AdminController::class, 'updatePermission'])->name('update');
+        Route::delete('/{permission}', [AdminController::class, 'destroyPermission'])->name('destroy');
+
+        // Permission actions
+        Route::post('/sync-permissions', [AdminController::class, 'syncPermissions'])->name('sync');
+        Route::get('/by-module', [AdminController::class, 'permissionsByModule'])->name('by-module');
+    });
+
+    // Security & Access Management
+    Route::prefix('security')->name('security.')->group(function () {
+        Route::get('/', [AdminController::class, 'security'])->name('index');
+        Route::get('/sessions', [AdminController::class, 'activeSessions'])->name('sessions');
+        Route::post('/sessions/{session}/terminate', [AdminController::class, 'terminateSession'])->name('sessions.terminate');
+        Route::get('/login-logs', [AdminController::class, 'loginLogs'])->name('login-logs');
+        Route::get('/failed-logins', [AdminController::class, 'failedLogins'])->name('failed-logins');
+        Route::post('/unlock-user/{user}', [AdminController::class, 'unlockUser'])->name('unlock-user');
+        Route::get('/security-settings', [AdminController::class, 'securitySettings'])->name('settings');
+        Route::put('/security-settings', [AdminController::class, 'updateSecuritySettings'])->name('settings.update');
+    });
+
+    // Team Management
+    Route::prefix('teams')->name('teams.')->group(function () {
+        Route::get('/', [AdminController::class, 'teams'])->name('index');
+        Route::get('/create', [AdminController::class, 'createTeam'])->name('create');
+        Route::post('/', [AdminController::class, 'storeTeam'])->name('store');
+        Route::get('/{team}', [AdminController::class, 'showTeam'])->name('show');
+        Route::get('/{team}/edit', [AdminController::class, 'editTeam'])->name('edit');
+        Route::put('/{team}', [AdminController::class, 'updateTeam'])->name('update');
+        Route::delete('/{team}', [AdminController::class, 'destroyTeam'])->name('destroy');
+
+        // Team actions
+        Route::post('/{team}/add-member', [AdminController::class, 'addTeamMember'])->name('add-member');
+        Route::delete('/{team}/remove-member/{user}', [AdminController::class, 'removeTeamMember'])->name('remove-member');
+    });
+
+    // Activity & Audit Logs
+    Route::prefix('activity')->name('activity.')->group(function () {
+        Route::get('/', [AdminController::class, 'activityLogs'])->name('index');
+        Route::get('/{activity}', [AdminController::class, 'showActivity'])->name('show');
+        Route::get('/user/{user}', [AdminController::class, 'userActivity'])->name('user');
+        Route::delete('/bulk-delete', [AdminController::class, 'bulkDeleteActivity'])->name('bulk-delete');
+        Route::post('/clear-old', [AdminController::class, 'clearOldActivity'])->name('clear-old');
+        Route::get('/export', [AdminController::class, 'exportActivity'])->name('export');
+    });
+
+    // System Information
+    Route::prefix('system')->name('system.')->group(function () {
+        Route::get('/info', [AdminController::class, 'systemInfo'])->name('info');
+        Route::get('/health-check', [AdminController::class, 'healthCheck'])->name('health-check');
+        Route::get('/performance', [AdminController::class, 'performance'])->name('performance');
+        Route::post('/clear-cache', [AdminController::class, 'clearCache'])->name('clear-cache');
+        Route::post('/optimize', [AdminController::class, 'optimizeSystem'])->name('optimize');
+    });
+
+    // Reports & Analytics
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [AdminController::class, 'adminReports'])->name('index');
+        Route::get('/user-activity', [AdminController::class, 'userActivityReport'])->name('user-activity');
+        Route::get('/permissions-audit', [AdminController::class, 'permissionsAudit'])->name('permissions-audit');
+        Route::get('/security-summary', [AdminController::class, 'securitySummary'])->name('security-summary');
+        Route::get('/login-analytics', [AdminController::class, 'loginAnalytics'])->name('login-analytics');
     });
 });
 
