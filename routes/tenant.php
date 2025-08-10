@@ -386,11 +386,14 @@ Route::prefix('ledger-accounts')->name('ledger-accounts.')->group(function () {
         // POS Module
         Route::prefix('pos')->name('tenant.pos.')->group(function () {
             Route::get('/', [PosController::class, 'index'])->name('index');
-            Route::get('/create', [PosController::class, 'create'])->name('create');
             Route::post('/', [PosController::class, 'store'])->name('store');
-            Route::get('/{sale}', [PosController::class, 'show'])->name('show');
-            Route::get('/{sale}/receipt', [PosController::class, 'receipt'])->name('receipt');
-            Route::post('/{sale}/refund', [PosController::class, 'refund'])->name('refund');
+            Route::get('/register-session', [PosController::class, 'registerSession'])->name('register-session');
+            Route::post('/open-session', [PosController::class, 'openSession'])->name('open-session');
+            Route::get('/close-session', [PosController::class, 'closeSession'])->name('close-session');
+            Route::post('/close-session', [PosController::class, 'storeCloseSession'])->name('store-close-session');
+            Route::get('/sales/{sale}', [PosController::class, 'show'])->name('show');
+            Route::get('/sales/{sale}/receipt', [PosController::class, 'receipt'])->name('receipt');
+            Route::post('/sales/{sale}/refund', [PosController::class, 'refund'])->name('refund');
             Route::get('/reports', [PosController::class, 'reports'])->name('reports');
         });
 

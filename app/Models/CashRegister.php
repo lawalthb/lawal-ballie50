@@ -8,28 +8,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Traits\BelongsToTenant;
 
-class PaymentMethod extends Model
+class CashRegister extends Model
 {
     use HasFactory, BelongsToTenant;
 
     protected $fillable = [
         'tenant_id',
         'name',
-        'code',
-        'requires_reference',
+        'location',
+        'opening_balance',
+        'current_balance',
         'is_active',
-        'description',
-        'charge_percentage',
-        'charge_amount',
-        'settings',
     ];
 
     protected $casts = [
-        'requires_reference' => 'boolean',
+        'opening_balance' => 'decimal:2',
+        'current_balance' => 'decimal:2',
         'is_active' => 'boolean',
-        'charge_percentage' => 'decimal:2',
-        'charge_amount' => 'decimal:2',
-        'settings' => 'array',
     ];
 
     public function tenant(): BelongsTo
@@ -37,13 +32,23 @@ class PaymentMethod extends Model
         return $this->belongsTo(Tenant::class);
     }
 
-    public function salePayments(): HasMany
+    public function sessions(): HasMany
     {
-        return $this->hasMany(SalePayment::class);
+        return $this->hasMany(CashRegisterSession::class);
+    }
+
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class);
     }
 
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function getActiveSessionAttribute()
+    {
+        return $this->sessions()->whereNull('closed_at')->first();
     }
 }
