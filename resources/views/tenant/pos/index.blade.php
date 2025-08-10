@@ -548,7 +548,7 @@ function posSystem() {
             setTimeout(() => {
                 this.notificationMessage = 'Welcome to the enhanced POS system!';
                 this.notificationType = 'info';
-                this.showNotification = true;
+                this.showNotification = false;
 
                 setTimeout(() => {
                     this.showNotification = false;

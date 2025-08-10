@@ -1,7 +1,7 @@
 <!-- Cart Sidebar -->
 <aside class="w-full lg:w-80 xl:w-96 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-l border-gray-200/80 dark:border-gray-700/50 flex flex-col animate-slide-in-right fixed inset-y-0 right-0 z-40 lg:relative transform transition-all duration-300 ease-in-out shadow-2xl"
      :class="{'translate-x-0': showCartSidebar, 'translate-x-full lg:translate-x-0': !showCartSidebar}"
-     style="height: calc(100vh - 60px); top: 60px;">
+     style="height: calc(100vh - 60px); top: 10px;">
 
     <!-- Close Button (Mobile) -->
     <button @click="showCartSidebar = false"
@@ -37,7 +37,7 @@
     </div>
 
     <!-- Cart Items -->
-    <div class="flex-1 overflow-y-auto px-3 py-4" x-data="{ showAllItems: false, maxVisibleItems: 5 }">
+    <div class="flex-1 overflow-y-auto px-2 py-2" x-data="{ showAllItems: false, maxVisibleItems: 5 }" style="max-height: calc(100vh - 400px);">
         <!-- Empty Cart State -->
         <div x-show="cartItems.length === 0" class="text-center py-16 px-4">
             <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700/50 dark:to-gray-600/50 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -47,12 +47,12 @@
             <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Select products from the catalog to add them to your cart and begin checkout.</p>
         </div>
 
-        <!-- Latest Items Display -->
-        <div x-show="cartItems.length > 0" class="space-y-3">
+        <!-- Items Display -->
+        <div x-show="cartItems.length > 0" class="space-y-2">
             <!-- Show/Hide Toggle for many items -->
-            <div x-show="cartItems.length > maxVisibleItems" class="text-center">
+            <div x-show="cartItems.length > maxVisibleItems" class="text-center pb-2 sticky top-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm z-10">
                 <button @click="showAllItems = !showAllItems"
-                        class="text-sm text-[var(--color-dark-purple)] dark:text-[var(--color-purple-accent)] hover:underline font-medium">
+                        class="text-sm text-[var(--color-dark-purple)] dark:text-[var(--color-purple-accent)] hover:underline font-medium py-2 px-4 rounded-lg bg-white/80 dark:bg-gray-700/80 border border-gray-200/50 dark:border-gray-600/50">
                     <span x-show="!showAllItems">
                         <i class="fas fa-chevron-down mr-1"></i>
                         Show all <span x-text="cartItems.length"></span> items
@@ -64,49 +64,49 @@
                 </button>
             </div>
 
-            <!-- Cart Items List (Latest First) -->
-            <template x-for="(item, index) in (showAllItems ? cartItems.slice().reverse() : cartItems.slice().reverse().slice(0, maxVisibleItems))" :key="item.id + '_' + index">
-                <div class="bg-white/80 dark:bg-gray-700/60 backdrop-blur-sm rounded-xl p-4 border border-gray-100/80 dark:border-gray-600/50 hover:border-[var(--color-dark-purple)]/50 dark:hover:border-[var(--color-purple-accent)]/50 transition-all duration-200 group shadow-sm hover:shadow-md">
-                    <!-- Item Header -->
-                    <div class="flex items-start justify-between mb-3">
-                        <div class="flex-1 min-w-0 pr-3">
-                            <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight mb-1" x-text="item.name"></h4>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1" x-text="item.sku"></p>
-                            <p class="text-xs text-[var(--color-dark-purple)] dark:text-[var(--color-purple-accent)] font-medium">
-                                ₦<span x-text="formatMoney(item.unit_price)"></span> each
-                            </p>
+            <!-- Scrollable Cart Items List -->
+            <div class="space-y-3 pb-4">
+                <template x-for="(item, index) in (showAllItems ? cartItems.slice().reverse() : cartItems.slice().reverse().slice(0, maxVisibleItems))" :key="item.id + '_' + index">
+                    <div class="bg-white/90 dark:bg-gray-700/70 backdrop-blur-sm rounded-xl p-3 border border-gray-200/80 dark:border-gray-600/50 hover:border-[var(--color-dark-purple)]/50 dark:hover:border-[var(--color-purple-accent)]/50 transition-all duration-200 group shadow-sm hover:shadow-md mb-3">
+                        <!-- Item Header -->
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex-1 min-w-0 pr-3">
+                                <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight mb-1 line-clamp-2" x-text="item.name"></h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1" x-text="item.sku"></p>
+                                <p class="text-xs text-[var(--color-dark-purple)] dark:text-[var(--color-purple-accent)] font-medium">
+                                    ₦<span x-text="formatMoney(item.unit_price)"></span> each
+                                </p>
+                            </div>
+                            <button @click="removeFromCart(cartItems.findIndex(cartItem => cartItem.id === item.id))"
+                                    class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 shrink-0">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
                         </div>
-                        <button @click="removeFromCart(cartItems.findIndex(cartItem => cartItem.id === item.id))"
-                                class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200">
-                            <i class="fas fa-trash text-sm"></i>
-                        </button>
-                    </div>
 
-                    <!-- Quantity Controls -->
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-1">
-                            <button @click="updateQuantity(cartItems.findIndex(cartItem => cartItem.id === item.id), item.quantity - 1)"
-                                    class="w-8 h-8 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md flex items-center justify-center transition-colors duration-200 shadow-sm">
-                                <i class="fas fa-minus text-xs text-gray-600 dark:text-gray-300"></i>
-                            </button>
-                            <span class="min-w-[2rem] text-center font-semibold text-gray-900 dark:text-gray-100" x-text="item.quantity"></span>
-                            <button @click="updateQuantity(cartItems.findIndex(cartItem => cartItem.id === item.id), parseFloat(item.quantity) + 1)"
-                                    class="w-8 h-8 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md flex items-center justify-center transition-colors duration-200 shadow-sm">
-                                <i class="fas fa-plus text-xs text-gray-600 dark:text-gray-300"></i>
-                            </button>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-lg font-bold text-[var(--color-dark-purple)] dark:text-[var(--color-purple-accent)]">
-                                ₦<span x-text="formatMoney(item.lineTotal)"></span>
+                        <!-- Quantity Controls -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-1">
+                                <button @click="updateQuantity(cartItems.findIndex(cartItem => cartItem.id === item.id), item.quantity - 1)"
+                                        class="w-7 h-7 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md flex items-center justify-center transition-colors duration-200 shadow-sm">
+                                    <i class="fas fa-minus text-xs text-gray-600 dark:text-gray-300"></i>
+                                </button>
+                                <span class="min-w-[1.5rem] text-center font-semibold text-sm text-gray-900 dark:text-gray-100" x-text="item.quantity"></span>
+                                <button @click="updateQuantity(cartItems.findIndex(cartItem => cartItem.id === item.id), parseFloat(item.quantity) + 1)"
+                                        class="w-7 h-7 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md flex items-center justify-center transition-colors duration-200 shadow-sm">
+                                    <i class="fas fa-plus text-xs text-gray-600 dark:text-gray-300"></i>
+                                </button>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-base font-bold text-[var(--color-dark-purple)] dark:text-[var(--color-purple-accent)]">
+                                    ₦<span x-text="formatMoney(item.lineTotal)"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </template>
+                </template>
+            </div>
         </div>
-    </div>
-
-    <!-- Totals -->
+    </div>    <!-- Totals -->
     <div class="border-t border-gray-200/80 dark:border-gray-700/50 p-3 md:p-4 space-y-3 bg-white/50 dark:bg-gray-800/50 transition-colors duration-300">
         <div class="flex justify-between text-sm">
             <span class="text-gray-700 dark:text-gray-300">Subtotal:</span>
