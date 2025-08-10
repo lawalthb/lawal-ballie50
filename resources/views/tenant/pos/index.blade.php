@@ -192,6 +192,20 @@ function posSystem() {
         notificationMessage: '',
         notificationType: 'info', // 'info', 'success', 'warning', 'error'
 
+        // Helper method to get cash payment method ID
+        getCashPaymentMethodId() {
+            @if(isset($paymentMethods))
+                const methods = @json($paymentMethods);
+                const cashMethod = methods.find(method =>
+                    method.name.toLowerCase().includes('cash') ||
+                    method.name.toLowerCase() === 'cash'
+                );
+                return cashMethod ? cashMethod.id : (methods.length > 0 ? methods[0].id : '');
+            @else
+                return 1; // Fallback cash method ID
+            @endif
+        },
+
         // Computed properties
         get cartSubtotal() {
             return this.cartItems.reduce((sum, item) => sum + (parseFloat(item.quantity) * parseFloat(item.unit_price)), 0);
@@ -381,6 +395,14 @@ function posSystem() {
                 }, 3000);
                 return;
             }
+
+            // Reset payments array with cash as default and set amount to cart total
+            this.payments = [{
+                method_id: this.getCashPaymentMethodId(),
+                amount: this.cartTotal,
+                reference: ''
+            }];
+
             this.showPaymentModal = true;
         },
 

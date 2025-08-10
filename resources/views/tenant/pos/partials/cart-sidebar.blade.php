@@ -147,7 +147,7 @@
         </div>
 
         <!-- Payment Method Selection -->
-        <div class="space-y-3">
+        {{-- <div class="space-y-3">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 <i class="fas fa-credit-card mr-2"></i>Payment Method
             </label>
@@ -171,7 +171,7 @@
                     <span>Transfer</span>
                 </button>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Proceed to Payment Button -->
         <div>

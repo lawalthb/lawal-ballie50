@@ -70,6 +70,41 @@
                                min="0"
                                step="0.01"
                                placeholder="0.00">
+
+                        <!-- Quick Amount Buttons for Cash Payment -->
+                        {{-- <div x-show="getPaymentMethod(payment.method_id)?.name?.toLowerCase().includes('cash')" class="mt-3">
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Quick Amounts</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button type="button" @click="payment.amount = cartTotal"
+                                        class="px-3 py-2 text-xs bg-[var(--color-dark-purple)] dark:bg-[var(--color-purple-accent)] text-white rounded-lg hover:opacity-90 transition-opacity duration-200 font-medium">
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-xs opacity-80">Exact</span>
+                                        <span>₦<span x-text="formatMoney(cartTotal)"></span></span>
+                                    </div>
+                                </button>
+                                <button type="button" @click="payment.amount = Math.ceil(cartTotal / 1000) * 1000"
+                                        class="px-3 py-2 text-xs bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200 font-medium">
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-xs opacity-80">Round Up</span>
+                                        <span>₦<span x-text="formatMoney(Math.ceil(cartTotal / 1000) * 1000)"></span></span>
+                                    </div>
+                                </button>
+                                <button type="button" @click="payment.amount = cartTotal + 500"
+                                        class="px-3 py-2 text-xs bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 font-medium">
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-xs opacity-80">+ Tip</span>
+                                        <span>₦<span x-text="formatMoney(cartTotal + 500)"></span></span>
+                                    </div>
+                                </button>
+                                <button type="button" @click="payment.amount = cartTotal + 1000"
+                                        class="px-3 py-2 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 font-medium">
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-xs opacity-80">+ Extra</span>
+                                        <span>₦<span x-text="formatMoney(cartTotal + 1000)"></span></span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="mt-3" x-show="payment.method_id && getPaymentMethod(payment.method_id)?.requires_reference">
