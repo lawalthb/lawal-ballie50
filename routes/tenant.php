@@ -9,28 +9,40 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Tenant\AuthController;
 use App\Http\Controllers\Tenant\DashboardController;
 use App\Http\Controllers\Tenant\OnboardingController;
-use App\Http\Controllers\Tenant\ProductController;
+use App\Http\Controllers\Tenant\Inventory\ProductController;
 use App\Http\Controllers\Tenant\Crm\CustomerController;
 use App\Http\Controllers\Tenant\Accounting\InvoiceController;
 use App\Http\Controllers\Tenant\HelpController;
 use App\Http\Controllers\Tenant\SupportController;
 use App\Http\Controllers\Tenant\CommunityController;
-use App\Http\Controllers\Tenant\AccountingController;
-use App\Http\Controllers\Tenant\InventoryController;
+use App\Http\Controllers\Tenant\Accounting\AccountingController;
+use App\Http\Controllers\Tenant\Inventory\InventoryController;
 use App\Http\Controllers\Tenant\Crm\CrmController;
-use App\Http\Controllers\Tenant\PosController;
-use App\Http\Controllers\Tenant\PayrollController;
-use App\Http\Controllers\Tenant\ReportsController;
-use App\Http\Controllers\Tenant\DocumentsController;
-use App\Http\Controllers\Tenant\ActivityController;
-use App\Http\Controllers\Tenant\ProductCategoryController;
-use App\Http\Controllers\Tenant\SettingsController;
-use App\Http\Controllers\Tenant\AdminController;
+use App\Http\Controllers\Tenant\Pos\PosController;
+use App\Http\Controllers\Tenant\Payroll\PayrollController;
+use App\Http\Controllers\Tenant\Reports\ReportsController;
+use App\Http\Controllers\Tenant\Documents\DocumentsController;
+use App\Http\Controllers\Tenant\Activity\ActivityController;
+use App\Http\Controllers\Tenant\Inventory\ProductCategoryController;
+use App\Http\Controllers\Tenant\Settings\SettingsController;
+use App\Http\Controllers\Tenant\Admin\AdminController;
 use App\Http\Controllers\Tenant\Crm\VendorController;
-use App\Http\Controllers\Tenant\UnitController;
+use App\Http\Controllers\Tenant\Inventory\UnitController;
 use App\Models\Tenant;
 use App\Http\Controllers\Tenant\Accounting\LedgerAccountController;
 use App\Http\Controllers\Auth\SocialAuthController;
+
+// Additional organized controller imports
+use App\Http\Controllers\Tenant\Inventory\StockAdjustmentController;
+use App\Http\Controllers\Tenant\Crm\LeadController;
+use App\Http\Controllers\Tenant\Crm\OpportunityController;
+use App\Http\Controllers\Tenant\Accounting\ExpenseController;
+use App\Http\Controllers\Tenant\Accounting\PaymentController;
+use App\Http\Controllers\Tenant\Accounting\ChartOfAccountsController;
+use App\Http\Controllers\Tenant\Api\SearchController;
+use App\Http\Controllers\Tenant\Api\NotificationController;
+use App\Http\Controllers\Tenant\Api\UploadController;
+use App\Http\Controllers\Tenant\Api\ExportController;
 
 /*
 |--------------------------------------------------------------------------
