@@ -87,7 +87,7 @@ class AdminController extends Controller
     public function createUser()
     {
         $roles = Role::where('tenant_id', tenant('id'))->get();
-        return view('tenant.admin.users.create', compact('roles'));
+        return view('tenant.admin.users.create-debug', compact('roles'));
     }
 
     /**

@@ -36,7 +36,7 @@ use App\Http\Controllers\Tenant\Accounting\LedgerAccountController;
 use App\Http\Controllers\Auth\SocialAuthController;
 
 // Additional organized controller imports
-use App\Http\Controllers\Tenant\Inventory\StockAdjustmentController;
+// use App\Http\Controllers\Tenant\Inventory\StockAdjustmentController;
 use App\Http\Controllers\Tenant\Crm\LeadController;
 use App\Http\Controllers\Tenant\Crm\OpportunityController;
 use App\Http\Controllers\Tenant\Accounting\ExpenseController;
@@ -336,6 +336,7 @@ Route::prefix('ledger-accounts')->name('ledger-accounts.')->group(function () {
             });
 
             // Stock Adjustments
+            /*
             Route::prefix('stock-adjustments')->name('stock-adjustments.')->group(function () {
                 Route::get('/', [StockAdjustmentController::class, 'index'])->name('index');
                 Route::get('/create', [StockAdjustmentController::class, 'create'])->name('create');
@@ -345,6 +346,7 @@ Route::prefix('ledger-accounts')->name('ledger-accounts.')->group(function () {
                 Route::put('/{adjustment}', [StockAdjustmentController::class, 'update'])->name('update');
                 Route::delete('/{adjustment}', [StockAdjustmentController::class, 'destroy'])->name('destroy');
             });
+            */
 
             // Stock Reports
             Route::prefix('reports')->name('reports.')->group(function () {
